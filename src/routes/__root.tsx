@@ -82,15 +82,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Amish Kumar — Builder, CS Student & Founder-in-Progress" },
+      {
+        name: "description",
+        content:
+          "Portfolio of Amish Kumar — CS student at SRM building AI-first products like Dravik, Nirbhay AI, and SmartAid. Software, design, and ambitious ideas.",
+      },
+      { name: "author", content: "Amish Kumar" },
+      { property: "og:title", content: "Amish Kumar — Builder & CS Student" },
+      {
+        property: "og:description",
+        content:
+          "AI-first products, cybersecurity, and product design. Currently building Dravik, Nirbhay AI, and SmartAid.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
-    ],
     links: [
       {
         rel: "stylesheet",
