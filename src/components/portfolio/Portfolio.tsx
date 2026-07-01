@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
+import { SiteNav } from "./SiteNav";
+import { SiteFooter } from "./SiteFooter";
 
 // ---------- Data ----------
 const PROJECTS = [
@@ -706,12 +708,13 @@ function Footer() {
   );
 }
 
+
 // ---------- Page ----------
 export default function Portfolio() {
   return (
     <div className="min-h-screen bg-paper text-ink selection:bg-ink selection:text-paper">
       <Cursor />
-      <Nav />
+      <SiteNav />
       <main>
         <Hero />
         <About />
@@ -720,7 +723,8 @@ export default function Portfolio() {
         <Bots />
         <Contact />
       </main>
-      <Footer />
+      <SiteFooter />
     </div>
   );
 }
+
