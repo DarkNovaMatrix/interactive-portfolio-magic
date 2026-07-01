@@ -708,8 +708,6 @@ function Footer() {
   );
 }
 
-import { SiteNav } from "./SiteNav";
-import { SiteFooter } from "./SiteFooter";
 
 // ---------- Page ----------
 export default function Portfolio() {
