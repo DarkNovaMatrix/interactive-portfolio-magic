@@ -706,12 +706,15 @@ function Footer() {
   );
 }
 
+import { SiteNav } from "./SiteNav";
+import { SiteFooter } from "./SiteFooter";
+
 // ---------- Page ----------
 export default function Portfolio() {
   return (
     <div className="min-h-screen bg-paper text-ink selection:bg-ink selection:text-paper">
       <Cursor />
-      <Nav />
+      <SiteNav />
       <main>
         <Hero />
         <About />
@@ -720,7 +723,8 @@ export default function Portfolio() {
         <Bots />
         <Contact />
       </main>
-      <Footer />
+      <SiteFooter />
     </div>
   );
 }
+
