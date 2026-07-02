@@ -36,11 +36,7 @@ export function SiteNav() {
             </a>
           ))}
           <ThemeToggle />
-          {false && (
-            <a href="#" className="hidden">
-              _
-            </a>
-          ))}
+
         </nav>
 
         <button
