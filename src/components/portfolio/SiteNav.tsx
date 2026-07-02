@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { SOCIALS } from "@/data/socials";
+import { ThemeToggle } from "./ThemeToggle";
+
 
 const LINKS: [string, string][] = [
   ["Home", "/"],
@@ -31,6 +33,12 @@ export function SiteNav() {
           {top4.map((s) => (
             <a key={s.name} href={s.url} target="_blank" rel="noreferrer" className="hover-underline" title={s.handle}>
               {s.name.split(" ")[0]}
+            </a>
+          ))}
+          <ThemeToggle />
+          {false && (
+            <a href="#" className="hidden">
+              _
             </a>
           ))}
         </nav>
