@@ -16,6 +16,8 @@ import "@fontsource/work-sans/600.css";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { ThemeProvider } from "../lib/theme";
+import { EnvBot } from "../components/portfolio/EnvBot";
 
 function NotFoundComponent() {
   return (
@@ -131,8 +133,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <ThemeProvider>
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <Outlet />
+        <EnvBot />
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

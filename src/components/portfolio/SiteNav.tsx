@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { SOCIALS } from "@/data/socials";
+import { ThemeToggle } from "./ThemeToggle";
+
 
 const LINKS: [string, string][] = [
   ["Home", "/"],
@@ -33,6 +35,8 @@ export function SiteNav() {
               {s.name.split(" ")[0]}
             </a>
           ))}
+          <ThemeToggle />
+
         </nav>
 
         <button
