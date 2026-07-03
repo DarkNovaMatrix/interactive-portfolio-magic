@@ -139,6 +139,7 @@ function RootComponent() {
       <ThemeProvider>
         <AetherProvider>
           <AetherAmbient />
+          <AetherTrail />
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <Outlet />
           <Aether />
