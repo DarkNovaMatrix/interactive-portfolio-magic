@@ -11,17 +11,21 @@ export type Personality = {
   playfulness: number; confidence: number;
 };
 
+export type Escort = { toPath: string; toX: number; toY: number; phase: "toLink" | "toTop" } | null;
+
 export type AetherState = {
   personality: Personality;
   emotion: Emotion;
   form: Form;
   scale: number;
   message: string | null;
+  escort: Escort;
   memory: {
     visits: number;
     idleTicks: number;
     sectionsSeen: string[];
     lastInteraction: number;
+    recentLines: string[];
   };
 };
 
@@ -33,6 +37,9 @@ type Ctx = {
   nudge: (patch: Partial<Personality>) => void;
   noteSection: (id: string) => void;
   noteInteraction: () => void;
+  startEscort: (e: Exclude<Escort, null>) => void;
+  advanceEscort: (phase: "toTop") => void;
+  endEscort: () => void;
 };
 
 const AetherCtx = createContext<Ctx | null>(null);
@@ -43,7 +50,8 @@ const DEFAULT: AetherState = {
   form: "orb",
   scale: 1,
   message: null,
-  memory: { visits: 1, idleTicks: 0, sectionsSeen: [], lastInteraction: Date.now() },
+  escort: null,
+  memory: { visits: 1, idleTicks: 0, sectionsSeen: [], lastInteraction: Date.now(), recentLines: [] },
 };
 
 const clamp = (n: number) => Math.max(0, Math.min(100, n));
@@ -147,7 +155,11 @@ export function AetherProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const say = (msg: string, ms = 4000) => {
-    setState((s) => ({ ...s, message: msg }));
+    setState((s) => ({
+      ...s,
+      message: msg,
+      memory: { ...s.memory, recentLines: [...s.memory.recentLines.slice(-5), msg] },
+    }));
     if (msgTimer.current) clearTimeout(msgTimer.current);
     msgTimer.current = setTimeout(() => setState((s) => ({ ...s, message: null })), ms);
   };
@@ -170,9 +182,15 @@ export function AetherProvider({ children }: { children: ReactNode }) {
     );
   const noteInteraction = () =>
     setState((s) => ({ ...s, memory: { ...s.memory, lastInteraction: Date.now(), idleTicks: 0 } }));
+  const startEscort = (e: Exclude<Escort, null>) => setState((s) => ({ ...s, escort: e }));
+  const advanceEscort = (phase: "toTop") =>
+    setState((s) => (s.escort ? { ...s, escort: { ...s.escort, phase } } : s));
+  const endEscort = () => setState((s) => ({ ...s, escort: null }));
 
   return (
-    <AetherCtx.Provider value={{ state, say, shift, feel, nudge, noteSection, noteInteraction }}>
+    <AetherCtx.Provider
+      value={{ state, say, shift, feel, nudge, noteSection, noteInteraction, startEscort, advanceEscort, endEscort }}
+    >
       {children}
     </AetherCtx.Provider>
   );

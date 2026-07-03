@@ -20,6 +20,7 @@ import { ThemeProvider } from "../lib/theme";
 import { AetherProvider } from "../lib/aether-state";
 import { Aether } from "../components/portfolio/Aether";
 import { AetherAmbient } from "../components/portfolio/AetherAmbient";
+import { AetherTrail } from "../components/portfolio/AetherTrail";
 
 function NotFoundComponent() {
   return (
@@ -138,6 +139,7 @@ function RootComponent() {
       <ThemeProvider>
         <AetherProvider>
           <AetherAmbient />
+          <AetherTrail />
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <Outlet />
           <Aether />
