@@ -11,17 +11,21 @@ export type Personality = {
   playfulness: number; confidence: number;
 };
 
+export type Escort = { toPath: string; toX: number; toY: number; phase: "toLink" | "toTop" } | null;
+
 export type AetherState = {
   personality: Personality;
   emotion: Emotion;
   form: Form;
   scale: number;
   message: string | null;
+  escort: Escort;
   memory: {
     visits: number;
     idleTicks: number;
     sectionsSeen: string[];
     lastInteraction: number;
+    recentLines: string[];
   };
 };
 
@@ -33,6 +37,9 @@ type Ctx = {
   nudge: (patch: Partial<Personality>) => void;
   noteSection: (id: string) => void;
   noteInteraction: () => void;
+  startEscort: (e: Exclude<Escort, null>) => void;
+  advanceEscort: (phase: "toTop") => void;
+  endEscort: () => void;
 };
 
 const AetherCtx = createContext<Ctx | null>(null);
@@ -43,7 +50,8 @@ const DEFAULT: AetherState = {
   form: "orb",
   scale: 1,
   message: null,
-  memory: { visits: 1, idleTicks: 0, sectionsSeen: [], lastInteraction: Date.now() },
+  escort: null,
+  memory: { visits: 1, idleTicks: 0, sectionsSeen: [], lastInteraction: Date.now(), recentLines: [] },
 };
 
 const clamp = (n: number) => Math.max(0, Math.min(100, n));
