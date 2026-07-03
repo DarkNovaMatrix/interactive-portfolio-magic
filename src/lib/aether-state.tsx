@@ -155,7 +155,11 @@ export function AetherProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const say = (msg: string, ms = 4000) => {
-    setState((s) => ({ ...s, message: msg }));
+    setState((s) => ({
+      ...s,
+      message: msg,
+      memory: { ...s.memory, recentLines: [...s.memory.recentLines.slice(-5), msg] },
+    }));
     if (msgTimer.current) clearTimeout(msgTimer.current);
     msgTimer.current = setTimeout(() => setState((s) => ({ ...s, message: null })), ms);
   };
@@ -178,9 +182,15 @@ export function AetherProvider({ children }: { children: ReactNode }) {
     );
   const noteInteraction = () =>
     setState((s) => ({ ...s, memory: { ...s.memory, lastInteraction: Date.now(), idleTicks: 0 } }));
+  const startEscort = (e: Exclude<Escort, null>) => setState((s) => ({ ...s, escort: e }));
+  const advanceEscort = (phase: "toTop") =>
+    setState((s) => (s.escort ? { ...s, escort: { ...s.escort, phase } } : s));
+  const endEscort = () => setState((s) => ({ ...s, escort: null }));
 
   return (
-    <AetherCtx.Provider value={{ state, say, shift, feel, nudge, noteSection, noteInteraction }}>
+    <AetherCtx.Provider
+      value={{ state, say, shift, feel, nudge, noteSection, noteInteraction, startEscort, advanceEscort, endEscort }}
+    >
       {children}
     </AetherCtx.Provider>
   );
