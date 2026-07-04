@@ -43,8 +43,9 @@ export function Aether() {
 
   const rx = useMotionValue(0);
   const ry = useMotionValue(0);
-  const sx = useSpring(rx, { stiffness: 45, damping: 20, mass: 1.1 });
-  const sy = useSpring(ry, { stiffness: 45, damping: 20, mass: 1.1 });
+  // Snap-and-hold: high stiffness + heavy mass = fast lift, planted landing.
+  const sx = useSpring(rx, { stiffness: 210, damping: 26, mass: 1.6 });
+  const sy = useSpring(ry, { stiffness: 210, damping: 26, mass: 1.6 });
 
   const cursor = useRef({ x: 0, y: 0, moving: false, movedAt: 0 });
   const target = useRef({ x: 0, y: 0 });
