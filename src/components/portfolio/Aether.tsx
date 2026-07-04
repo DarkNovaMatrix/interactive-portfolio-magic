@@ -43,8 +43,9 @@ export function Aether() {
 
   const rx = useMotionValue(0);
   const ry = useMotionValue(0);
-  const sx = useSpring(rx, { stiffness: 45, damping: 20, mass: 1.1 });
-  const sy = useSpring(ry, { stiffness: 45, damping: 20, mass: 1.1 });
+  // Snap-and-hold: high stiffness + heavy mass = fast lift, planted landing.
+  const sx = useSpring(rx, { stiffness: 210, damping: 26, mass: 1.6 });
+  const sy = useSpring(ry, { stiffness: 210, damping: 26, mass: 1.6 });
 
   const cursor = useRef({ x: 0, y: 0, moving: false, movedAt: 0 });
   const target = useRef({ x: 0, y: 0 });
@@ -157,45 +158,67 @@ export function Aether() {
     return () => io.disconnect();
   }, [llmSpeak, noteSection, nudge, shift, routerState.location.pathname]);
 
-  // roaming — suspended during escort
+  // roaming — deliberate hops between anchor points, not continuous drift.
+  // Long holds when idle/focused; short frequent hops when playful/excited.
   useEffect(() => {
-    const iv = setInterval(() => {
-      if (dragging || state.escort) return;
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      const emo = state.emotion;
-      const c = cursor.current;
-      const cursorFresh = Date.now() - c.movedAt < 1500;
-
-      let tx: number;
-      let ty: number;
-
-      if (emo === "sleepy") {
-        tx = w - 130 + (Math.random() - 0.5) * 20;
-        ty = h - 130 + (Math.random() - 0.5) * 20;
-      } else if (emo === "playful" && cursorFresh) {
-        const angle = Math.random() * Math.PI * 2;
-        tx = c.x + Math.cos(angle) * 90;
-        ty = c.y + Math.sin(angle) * 90;
-      } else if (emo === "excited") {
-        tx = Math.random() * (w - 160) + 80;
-        ty = Math.random() * (h * 0.6) + 80;
-      } else if (emo === "focused" && cursorFresh) {
-        tx = c.x + 70;
-        ty = Math.max(60, c.y - 100);
-      } else {
-        tx = Math.random() * (w - 200) + 100;
-        ty = Math.random() * (h - 240) + 120;
-      }
-
-      tx = Math.max(60, Math.min(w - 80, tx));
-      ty = Math.max(60, Math.min(h - 80, ty));
-      target.current = { x: tx, y: ty };
-      rx.set(tx);
-      ry.set(ty);
-    }, 3800);
-    return () => clearInterval(iv);
-  }, [dragging, rx, ry, state.emotion, state.escort]);
+    let cancelled = false;
+    function scheduleNext() {
+      if (cancelled) return;
+      const emo = stateRef.current.emotion;
+      const escorting = !!stateRef.current.escort;
+      // idle dwell time — TARS stands still. Longer = calmer.
+      const dwell =
+        escorting || dragging
+          ? 800
+          : emo === "sleepy"
+            ? 14000
+            : emo === "focused"
+              ? 9000
+              : emo === "playful"
+                ? 3200
+                : emo === "excited"
+                  ? 2400
+                  : 6500;
+      setTimeout(() => {
+        if (cancelled || dragging || stateRef.current.escort) {
+          scheduleNext();
+          return;
+        }
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        const c = cursor.current;
+        const cursorFresh = Date.now() - c.movedAt < 2000;
+        const cx = rx.get();
+        const cy = ry.get();
+        // Short, deliberate steps — never teleport across the screen.
+        const stepLen = emo === "excited" ? 220 : emo === "playful" ? 180 : emo === "sleepy" ? 40 : 130;
+        let tx: number;
+        let ty: number;
+        if (emo === "playful" && cursorFresh) {
+          const angle = Math.random() * Math.PI * 2;
+          tx = c.x + Math.cos(angle) * 90;
+          ty = c.y + Math.sin(angle) * 90;
+        } else if (emo === "focused" && cursorFresh) {
+          tx = c.x + 80;
+          ty = Math.max(80, c.y - 80);
+        } else {
+          const angle = Math.random() * Math.PI * 2;
+          tx = cx + Math.cos(angle) * stepLen;
+          ty = cy + Math.sin(angle) * stepLen;
+        }
+        tx = Math.max(80, Math.min(w - 80, tx));
+        ty = Math.max(80, Math.min(h - 100, ty));
+        target.current = { x: tx, y: ty };
+        rx.set(tx);
+        ry.set(ty);
+        scheduleNext();
+      }, dwell);
+    }
+    scheduleNext();
+    return () => {
+      cancelled = true;
+    };
+  }, [dragging, rx, ry]);
 
   // escort choreography
   useEffect(() => {

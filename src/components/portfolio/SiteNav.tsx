@@ -10,6 +10,7 @@ const LINKS: [string, string][] = [
   ["Home", "/"],
   ["Work", "/projects"],
   ["About", "/about"],
+  ["Cosmos", "/cosmos"],
   ["Links", "/links"],
 ];
 
