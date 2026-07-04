@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as LinksRouteImport } from './routes/links'
+import { Route as CosmosRouteImport } from './routes/cosmos'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -22,6 +23,11 @@ const ProjectsRoute = ProjectsRouteImport.update({
 const LinksRoute = LinksRouteImport.update({
   id: '/links',
   path: '/links',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CosmosRoute = CosmosRouteImport.update({
+  id: '/cosmos',
+  path: '/cosmos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -38,12 +44,14 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/cosmos': typeof CosmosRoute
   '/links': typeof LinksRoute
   '/projects': typeof ProjectsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/cosmos': typeof CosmosRoute
   '/links': typeof LinksRoute
   '/projects': typeof ProjectsRoute
 }
@@ -51,20 +59,22 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/cosmos': typeof CosmosRoute
   '/links': typeof LinksRoute
   '/projects': typeof ProjectsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/links' | '/projects'
+  fullPaths: '/' | '/about' | '/cosmos' | '/links' | '/projects'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/links' | '/projects'
-  id: '__root__' | '/' | '/about' | '/links' | '/projects'
+  to: '/' | '/about' | '/cosmos' | '/links' | '/projects'
+  id: '__root__' | '/' | '/about' | '/cosmos' | '/links' | '/projects'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  CosmosRoute: typeof CosmosRoute
   LinksRoute: typeof LinksRoute
   ProjectsRoute: typeof ProjectsRoute
 }
@@ -83,6 +93,13 @@ declare module '@tanstack/react-router' {
       path: '/links'
       fullPath: '/links'
       preLoaderRoute: typeof LinksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cosmos': {
+      id: '/cosmos'
+      path: '/cosmos'
+      fullPath: '/cosmos'
+      preLoaderRoute: typeof CosmosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -105,6 +122,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  CosmosRoute: CosmosRoute,
   LinksRoute: LinksRoute,
   ProjectsRoute: ProjectsRoute,
 }
