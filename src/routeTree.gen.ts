@@ -77,7 +77,14 @@ export interface FileRouteTypes {
   fullPaths: '/' | '/about' | '/aether' | '/cosmos' | '/links' | '/projects'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/about' | '/aether' | '/cosmos' | '/links' | '/projects'
-  id: '__root__' | '/' | '/about' | '/aether' | '/cosmos' | '/links' | '/projects'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/aether'
+    | '/cosmos'
+    | '/links'
+    | '/projects'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
