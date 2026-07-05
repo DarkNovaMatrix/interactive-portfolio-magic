@@ -21,7 +21,7 @@ export function SiteNav() {
 
   return (
     <header className="fixed top-0 inset-x-0 z-50 mix-blend-difference">
-      <div className="flex items-center justify-between px-6 md:px-10 py-5 text-paper">
+      <div className="flex items-center justify-between px-6 md:px-10 py-5 text-white">
         <Link to="/" className="serif text-2xl leading-none" onClick={(e) => escort("/", e)}>
           Amish<span className="text-accent">.</span>
         </Link>
@@ -39,7 +39,7 @@ export function SiteNav() {
               {l}
             </Link>
           ))}
-          <span className="h-4 w-px bg-paper/40" />
+          <span className="h-4 w-px bg-white/40" />
           {top4.map((s) => (
             <a key={s.name} href={s.url} target="_blank" rel="noreferrer" className="hover-underline" title={s.handle}>
               {s.name.split(" ")[0]}
