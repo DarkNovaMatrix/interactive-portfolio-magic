@@ -117,7 +117,7 @@ function ProjectsPage() {
               className="grid md:grid-cols-12 gap-8"
             >
               <div className="md:col-span-5">
-                <div className={`aspect-[4/5] relative grain bg-gradient-to-br ${p.tint} text-paper flex flex-col justify-between p-8 sticky top-32`}>
+                <div className={`aspect-[4/5] relative grain bg-gradient-to-br ${p.tint} text-[#f5f3ee] flex flex-col justify-between p-8 sticky top-32`}>
                   <div className="eyebrow opacity-70">{p.id}</div>
                   <div>
                     <div className="serif italic text-6xl md:text-7xl leading-none">{p.title}</div>
