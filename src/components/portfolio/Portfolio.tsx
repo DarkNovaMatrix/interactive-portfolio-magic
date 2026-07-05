@@ -367,7 +367,7 @@ function ProjectRow({
       >
         <div className={`h-[280px] w-full bg-gradient-to-br ${p.accent} relative`}>
           <div className="absolute inset-0 grain" />
-          <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between text-paper">
+          <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between text-[#f5f3ee]">
             <div className="serif text-4xl md:text-6xl italic">{p.title}</div>
             <div className="eyebrow opacity-80">{p.year}</div>
           </div>
