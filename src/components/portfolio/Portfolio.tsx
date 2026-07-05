@@ -121,7 +121,7 @@ function Nav() {
   ];
   return (
     <header className="fixed top-0 inset-x-0 z-50 mix-blend-difference">
-      <div className="flex items-center justify-between px-6 md:px-10 py-5 text-paper">
+      <div className="flex items-center justify-between px-6 md:px-10 py-5 text-white">
         <a href="#top" className="serif text-2xl leading-none">
           Amish<span className="text-accent">.</span>
         </a>
