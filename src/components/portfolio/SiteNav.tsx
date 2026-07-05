@@ -39,7 +39,7 @@ export function SiteNav() {
               {l}
             </Link>
           ))}
-          <span className="h-4 w-px bg-paper/40" />
+          <span className="h-4 w-px bg-white/40" />
           {top4.map((s) => (
             <a key={s.name} href={s.url} target="_blank" rel="noreferrer" className="hover-underline" title={s.handle}>
               {s.name.split(" ")[0]}
