@@ -136,11 +136,9 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AetherProvider>
-          <AetherAmbient />
-          <AetherTrail />
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <Outlet />
-          <Aether />
+          <AetherCore />
         </AetherProvider>
       </ThemeProvider>
     </QueryClientProvider>
