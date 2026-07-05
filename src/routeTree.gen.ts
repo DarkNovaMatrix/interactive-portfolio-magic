@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as LinksRouteImport } from './routes/links'
 import { Route as CosmosRouteImport } from './routes/cosmos'
+import { Route as AetherRouteImport } from './routes/aether'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -30,6 +31,11 @@ const CosmosRoute = CosmosRouteImport.update({
   path: '/cosmos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AetherRoute = AetherRouteImport.update({
+  id: '/aether',
+  path: '/aether',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -44,6 +50,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/aether': typeof AetherRoute
   '/cosmos': typeof CosmosRoute
   '/links': typeof LinksRoute
   '/projects': typeof ProjectsRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/aether': typeof AetherRoute
   '/cosmos': typeof CosmosRoute
   '/links': typeof LinksRoute
   '/projects': typeof ProjectsRoute
@@ -59,21 +67,30 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/aether': typeof AetherRoute
   '/cosmos': typeof CosmosRoute
   '/links': typeof LinksRoute
   '/projects': typeof ProjectsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/cosmos' | '/links' | '/projects'
+  fullPaths: '/' | '/about' | '/aether' | '/cosmos' | '/links' | '/projects'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/cosmos' | '/links' | '/projects'
-  id: '__root__' | '/' | '/about' | '/cosmos' | '/links' | '/projects'
+  to: '/' | '/about' | '/aether' | '/cosmos' | '/links' | '/projects'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/aether'
+    | '/cosmos'
+    | '/links'
+    | '/projects'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AetherRoute: typeof AetherRoute
   CosmosRoute: typeof CosmosRoute
   LinksRoute: typeof LinksRoute
   ProjectsRoute: typeof ProjectsRoute
@@ -102,6 +119,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CosmosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/aether': {
+      id: '/aether'
+      path: '/aether'
+      fullPath: '/aether'
+      preLoaderRoute: typeof AetherRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -122,6 +146,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AetherRoute: AetherRoute,
   CosmosRoute: CosmosRoute,
   LinksRoute: LinksRoute,
   ProjectsRoute: ProjectsRoute,
