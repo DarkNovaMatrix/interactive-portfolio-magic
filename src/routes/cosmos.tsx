@@ -406,7 +406,7 @@ function OrbitingPlanet({
   onClick: () => void;
 }) {
   const inner = useRef<THREE.Mesh>(null);
-  const outer = useRef<THREE.Group>(null);
+  const outer = useRef<THREE.Group | null>(null);
   const angle = useRef(Math.random() * Math.PI * 2);
   const [hover, setHover] = useState(false);
 
