@@ -184,7 +184,7 @@ export function AetherCore() {
         setBusy(false);
       }
     },
-    [busy, chat, form, messages, mood, navigate, routerState.location.pathname, theme, toggle],
+    [busy, chat, form, messages, mood, navigate, routerState.location.pathname, theme, toggle, voice, speak],
   );
 
   // Hide the HUD on the /aether cockpit page — the bot has its own house there.
