@@ -103,6 +103,7 @@ export function AetherCore() {
 
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [voice, setVoice] = useState(false);
   const [form, setForm] = useState<AetherForm>("orb");
   const [mood, setMood] = useState<AetherMood>("curious");
   const [input, setInput] = useState("");
@@ -110,11 +111,33 @@ export function AetherCore() {
     {
       role: "assistant",
       content:
-        "AETHER online. I know Amish, his projects, and this whole site. Ask me anything — or tell me to *open cosmos*, *go dark*, *write code*, *transform into a rocket*.",
+        "AETHER online. I know Amish inside-out — his projects, live coding stats, this whole site. Ask me anything, or tell me to *open cosmos*, *go dark*, *write code*, *transform into a rocket*.",
       ts: Date.now(),
     },
   ]);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Browser TTS — cleaned of markdown/code fences before speaking.
+  const speak = useCallback((text: string) => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    const clean = text
+      .replace(/```[\s\S]*?```/g, "")
+      .replace(/`([^`]+)`/g, "$1")
+      .replace(/\[\[[^\]]+\]\]/g, "")
+      .replace(/[*_#>]/g, "")
+      .trim();
+    if (!clean) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(clean.slice(0, 500));
+    const voices = window.speechSynthesis.getVoices();
+    const pick =
+      voices.find((v) => /Daniel|Google UK English Male|Microsoft Guy|Alex/i.test(v.name)) ??
+      voices.find((v) => v.lang?.startsWith("en"));
+    if (pick) u.voice = pick;
+    u.rate = 1.05;
+    u.pitch = 0.95;
+    window.speechSynthesis.speak(u);
+  }, []);
 
   useEffect(() => {
     if (open) {
