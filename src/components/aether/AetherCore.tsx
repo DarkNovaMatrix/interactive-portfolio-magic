@@ -243,6 +243,19 @@ export function AetherCore() {
                 </div>
               </div>
               <button
+                onClick={() => {
+                  setVoice((v) => {
+                    if (v && typeof window !== "undefined") window.speechSynthesis?.cancel();
+                    return !v;
+                  });
+                }}
+                className={`rounded-md p-1.5 border transition ${voice ? "border-[#5ad4ff] text-[#5ad4ff] bg-[#5ad4ff]/10" : "border-white/10 text-white/60 hover:text-white"}`}
+                title={voice ? "Mute voice" : "Enable voice"}
+                aria-label="Toggle voice"
+              >
+                {voice ? <Volume2 size={14} /> : <VolumeX size={14} />}
+              </button>
+              <button
                 onClick={() => navigate({ to: "/aether" })}
                 className="text-[10px] uppercase tracking-widest text-white/60 hover:text-white px-2 py-1 rounded border border-white/10"
                 title="Open cockpit"
