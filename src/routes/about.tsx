@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { motion } from "framer-motion";
 import { Suspense, useMemo } from "react";
@@ -21,13 +21,6 @@ export const Route = createFileRoute("/about")({
   }),
   component: AboutPage,
 });
-
-const statsQuery = () =>
-  queryOptions({
-    queryKey: ["coding-stats"],
-    queryFn: () => (getCodingStats as any)({}),
-    staleTime: 5 * 60 * 1000,
-  });
 
 /* ── Data ── */
 
