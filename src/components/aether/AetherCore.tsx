@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Send, X, Sparkles, ChevronDown } from "lucide-react";
+import { Send, ChevronDown, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { aetherChat } from "@/lib/aether-brain.functions";
 import { useTheme } from "@/lib/theme";
 import { AetherAvatar3D, type AetherForm, type AetherMood } from "./AetherAvatar3D";
