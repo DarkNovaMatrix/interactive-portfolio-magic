@@ -166,6 +166,7 @@ export function AetherCore() {
         });
         const reply = res?.text ?? "…";
         setMessages((prev) => [...prev, { role: "assistant", content: reply, ts: Date.now() }]);
+        if (voice) speak(reply);
         applyMarkers(res?.markers ?? [], {
           navigate: (to) => navigate({ to: to as any }),
           theme,
