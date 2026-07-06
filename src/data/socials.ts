@@ -1,4 +1,3 @@
-// Update the URLs to your real handles.
 export type Social = {
   name: string;
   handle: string;
@@ -6,20 +5,27 @@ export type Social = {
   category: "code" | "social" | "professional" | "contact";
 };
 
+export const HANDLES = {
+  github: "Zero-Day-Smile",
+  leetcode: "Zero-Day-Smile",
+  codeforces: "Zero-Day-Smile",
+  codechef: "zerodaysmile",
+  gfg: "ak25yvo4",
+  hackerrank: "ZeroDaySmile",
+  code360: "ZeroDaySmile",
+  linkedin: "amishkumarofficial",
+} as const;
+
 export const SOCIALS: Social[] = [
-  { name: "GitHub",     handle: "@amishkumar",       url: "https://github.com/amishkumar",           category: "code" },
-  { name: "LeetCode",   handle: "amishkumar",        url: "https://leetcode.com/amishkumar",         category: "code" },
-  { name: "HackerRank", handle: "amishkumar",        url: "https://hackerrank.com/amishkumar",       category: "code" },
-  { name: "CodeChef",   handle: "amishkumar",        url: "https://codechef.com/users/amishkumar",   category: "code" },
+  { name: "GitHub",     handle: "@Zero-Day-Smile", url: `https://github.com/${HANDLES.github}`,                              category: "code" },
+  { name: "LeetCode",   handle: "Zero-Day-Smile",  url: `https://leetcode.com/u/${HANDLES.leetcode}`,                        category: "code" },
+  { name: "Codeforces", handle: "Zero-Day-Smile",  url: `https://codeforces.com/profile/${HANDLES.codeforces}`,              category: "code" },
+  { name: "CodeChef",   handle: "zerodaysmile",    url: `https://www.codechef.com/users/${HANDLES.codechef}`,                category: "code" },
+  { name: "GeeksforGeeks", handle: "ak25yvo4",     url: `https://www.geeksforgeeks.org/user/${HANDLES.gfg}`,                 category: "code" },
+  { name: "HackerRank", handle: "ZeroDaySmile",    url: `https://www.hackerrank.com/profile/${HANDLES.hackerrank}`,          category: "code" },
+  { name: "Code360",    handle: "ZeroDaySmile",    url: `https://www.naukri.com/code360/profile/${HANDLES.code360}`,         category: "code" },
 
-  { name: "LinkedIn",   handle: "Amish Kumar",       url: "https://linkedin.com/in/amishkumar",      category: "professional" },
-  { name: "Figma",      handle: "@amishkumar",       url: "https://figma.com/@amishkumar",           category: "professional" },
-  { name: "Medium",     handle: "@amishkumar",       url: "https://medium.com/@amishkumar",          category: "professional" },
+  { name: "LinkedIn",   handle: "Amish Kumar",     url: `https://www.linkedin.com/in/${HANDLES.linkedin}`,                   category: "professional" },
 
-  { name: "Twitter / X",handle: "@amishkumar",       url: "https://x.com/amishkumar",                category: "social" },
-  { name: "Instagram",  handle: "@amish.kumar",      url: "https://instagram.com/amish.kumar",       category: "social" },
-  { name: "YouTube",    handle: "@amishkumar",       url: "https://youtube.com/@amishkumar",         category: "social" },
-  { name: "Discord",    handle: "amishkumar",        url: "https://discord.com/users/amishkumar",    category: "social" },
-
-  { name: "Email",      handle: "hello@amishkumar.dev", url: "mailto:hello@amishkumar.dev",          category: "contact" },
+  { name: "Email",      handle: "hello@amishkumar.dev", url: "mailto:hello@amishkumar.dev",                                  category: "contact" },
 ];

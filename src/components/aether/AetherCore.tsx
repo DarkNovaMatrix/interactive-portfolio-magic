@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Send, X, Sparkles, ChevronDown } from "lucide-react";
+import { Send, ChevronDown, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { aetherChat } from "@/lib/aether-brain.functions";
 import { useTheme } from "@/lib/theme";
 import { AetherAvatar3D, type AetherForm, type AetherMood } from "./AetherAvatar3D";
@@ -103,6 +103,7 @@ export function AetherCore() {
 
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [voice, setVoice] = useState(false);
   const [form, setForm] = useState<AetherForm>("orb");
   const [mood, setMood] = useState<AetherMood>("curious");
   const [input, setInput] = useState("");
@@ -110,11 +111,33 @@ export function AetherCore() {
     {
       role: "assistant",
       content:
-        "AETHER online. I know Amish, his projects, and this whole site. Ask me anything — or tell me to *open cosmos*, *go dark*, *write code*, *transform into a rocket*.",
+        "AETHER online. I know Amish inside-out — his projects, live coding stats, this whole site. Ask me anything, or tell me to *open cosmos*, *go dark*, *write code*, *transform into a rocket*.",
       ts: Date.now(),
     },
   ]);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Browser TTS — cleaned of markdown/code fences before speaking.
+  const speak = useCallback((text: string) => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    const clean = text
+      .replace(/```[\s\S]*?```/g, "")
+      .replace(/`([^`]+)`/g, "$1")
+      .replace(/\[\[[^\]]+\]\]/g, "")
+      .replace(/[*_#>]/g, "")
+      .trim();
+    if (!clean) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(clean.slice(0, 500));
+    const voices = window.speechSynthesis.getVoices();
+    const pick =
+      voices.find((v) => /Daniel|Google UK English Male|Microsoft Guy|Alex/i.test(v.name)) ??
+      voices.find((v) => v.lang?.startsWith("en"));
+    if (pick) u.voice = pick;
+    u.rate = 1.05;
+    u.pitch = 0.95;
+    window.speechSynthesis.speak(u);
+  }, []);
 
   useEffect(() => {
     if (open) {
@@ -143,6 +166,7 @@ export function AetherCore() {
         });
         const reply = res?.text ?? "…";
         setMessages((prev) => [...prev, { role: "assistant", content: reply, ts: Date.now() }]);
+        if (voice) speak(reply);
         applyMarkers(res?.markers ?? [], {
           navigate: (to) => navigate({ to: to as any }),
           theme,
@@ -160,7 +184,7 @@ export function AetherCore() {
         setBusy(false);
       }
     },
-    [busy, chat, form, messages, mood, navigate, routerState.location.pathname, theme, toggle],
+    [busy, chat, form, messages, mood, navigate, routerState.location.pathname, theme, toggle, voice, speak],
   );
 
   // Hide the HUD on the /aether cockpit page — the bot has its own house there.
@@ -218,6 +242,19 @@ export function AetherCore() {
                   form: {form} · mood: {mood}
                 </div>
               </div>
+              <button
+                onClick={() => {
+                  setVoice((v) => {
+                    if (v && typeof window !== "undefined") window.speechSynthesis?.cancel();
+                    return !v;
+                  });
+                }}
+                className={`rounded-md p-1.5 border transition ${voice ? "border-[#5ad4ff] text-[#5ad4ff] bg-[#5ad4ff]/10" : "border-white/10 text-white/60 hover:text-white"}`}
+                title={voice ? "Mute voice" : "Enable voice"}
+                aria-label="Toggle voice"
+              >
+                {voice ? <Volume2 size={14} /> : <VolumeX size={14} />}
+              </button>
               <button
                 onClick={() => navigate({ to: "/aether" })}
                 className="text-[10px] uppercase tracking-widest text-white/60 hover:text-white px-2 py-1 rounded border border-white/10"
