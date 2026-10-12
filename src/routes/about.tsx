@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 import { Suspense, useMemo } from "react";
 import { SiteNav } from "@/components/portfolio/SiteNav";
 import { SiteFooter } from "@/components/portfolio/SiteFooter";
-import { getCodingStats, type AllStats } from "@/lib/coding-stats.functions";
+import { getCodingStats, codingStatsQueryKey, type AllStats } from "@/lib/coding-stats.functions";
+import { readGithubToken } from "@/lib/github-token";
 import { SOCIALS } from "@/data/socials";
 
 export const Route = createFileRoute("/about")({
@@ -302,8 +303,8 @@ function StatsSkeleton() {
 function LiveStats() {
   const fetcher = useServerFn(getCodingStats);
   const q = useSuspenseQuery({
-    queryKey: ["coding-stats"],
-    queryFn: () => fetcher({} as any) as Promise<AllStats>,
+    queryKey: codingStatsQueryKey,
+    queryFn: (): Promise<AllStats> => fetcher({ data: { githubToken: readGithubToken() } }),
     staleTime: 5 * 60 * 1000,
   });
   const s = q.data;
