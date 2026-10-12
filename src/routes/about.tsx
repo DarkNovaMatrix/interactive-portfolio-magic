@@ -191,7 +191,7 @@ function AboutPage() {
         </section>
 
         {/* Certifications & Leadership */}
-        <section className="max-w-6xl mx-auto mt-20 grid md:grid-cols-2 gap-14">
+        <section id="certs" className="max-w-6xl mx-auto mt-20 grid md:grid-cols-2 gap-14 scroll-mt-28">
           <div>
             <div className="eyebrow text-muted-foreground mb-4">§ Certifications & hackathons</div>
             <ul className="space-y-2">
