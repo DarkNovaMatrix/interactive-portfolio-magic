@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 import { HANDLES } from "@/data/socials";
 
 /**
@@ -28,7 +29,13 @@ export type GithubStats = {
   following: number;
   url: string;
   topRepos: Repo[];
+  events: GithubEvent[];
+  lastActiveAt: string | null;
+  authenticated: boolean;
 } | null;
+
+export type GithubEvent = { id: string; type: string; repo: string; repoUrl: string; at: string };
+export type RecentSolve = { title: string; url: string; at: number };
 
 export type LeetCodeStats = {
   totalSolved: number;
@@ -37,6 +44,7 @@ export type LeetCodeStats = {
   hard: number;
   ranking: number | null;
   url: string;
+  recent: RecentSolve[];
 } | null;
 
 export type CodeforcesStats = {
@@ -46,6 +54,8 @@ export type CodeforcesStats = {
   maxRating: number | null;
   maxRank: string | null;
   url: string;
+  lastOnlineAt: number | null;
+  recent: RecentSolve[];
 } | null;
 
 export type CodeChefStats = {
@@ -74,6 +84,7 @@ export type AllStats = {
 };
 
 const CACHE_TTL = 5 * 60 * 1000;
+// Only anonymous/server-token results are cached; visitor-token results are never shared.
 let CACHE: { at: number; data: AllStats } | null = null;
 
 async function safeFetch(url: string, init?: RequestInit): Promise<Response | null> {
@@ -93,14 +104,26 @@ async function safeFetch(url: string, init?: RequestInit): Promise<Response | nu
   }
 }
 
-async function fetchGithub(user: string): Promise<GithubStats> {
-  const [uRes, rRes] = await Promise.all([
-    safeFetch(`https://api.github.com/users/${user}`),
-    safeFetch(`https://api.github.com/users/${user}/repos?sort=updated&per_page=100`),
+async function fetchGithub(user: string, token?: string): Promise<GithubStats> {
+  const init: RequestInit | undefined = token
+    ? { headers: { Authorization: `Bearer ${token}`, "X-GitHub-Api-Version": "2022-11-28" } }
+    : undefined;
+  const [uRes, rRes, eRes] = await Promise.all([
+    safeFetch(`https://api.github.com/users/${user}`, init),
+    safeFetch(`https://api.github.com/users/${user}/repos?sort=updated&per_page=100`, init),
+    safeFetch(`https://api.github.com/users/${user}/events/public?per_page=15`, init),
   ]);
   if (!uRes) return null;
   const u = await uRes.json() as any;
   const repos = rRes ? (await rRes.json() as any[]) : [];
+  const rawEvents = eRes ? (await eRes.json() as any[]) : [];
+  const events: GithubEvent[] = rawEvents.slice(0, 10).map((e) => ({
+    id: String(e.id),
+    type: String(e.type ?? "Event").replace(/Event$/, ""),
+    repo: e.repo?.name ?? "",
+    repoUrl: `https://github.com/${e.repo?.name ?? ""}`,
+    at: e.created_at,
+  }));
   const topRepos: Repo[] = repos
     .filter((r) => !r.fork)
     .sort((a, b) => (b.stargazers_count - a.stargazers_count) || (Date.parse(b.updated_at) - Date.parse(a.updated_at)))
@@ -124,12 +147,29 @@ async function fetchGithub(user: string): Promise<GithubStats> {
     following: u.following,
     url: u.html_url,
     topRepos,
+    events,
+    lastActiveAt: events[0]?.at ?? null,
+    authenticated: Boolean(token),
   };
+}
+
+async function fetchLeetCodeRecent(user: string): Promise<RecentSolve[]> {
+  const r = await safeFetch(`https://alfa-leetcode-api.onrender.com/${user}/acSubmission?limit=5`);
+  if (!r) return [];
+  const j = await r.json() as any;
+  return (j?.submission ?? []).slice(0, 5).map((x: any) => ({
+    title: x.title,
+    url: `https://leetcode.com/problems/${x.titleSlug}/`,
+    at: Number(x.timestamp) * 1000,
+  }));
 }
 
 async function fetchLeetCode(user: string): Promise<LeetCodeStats> {
   // Try alfa-leetcode-api first, then leetcode-stats-api as fallback.
-  const a = await safeFetch(`https://alfa-leetcode-api.onrender.com/${user}/solved`);
+  const [a, recent] = await Promise.all([
+    safeFetch(`https://alfa-leetcode-api.onrender.com/${user}/solved`),
+    fetchLeetCodeRecent(user),
+  ]);
   if (a) {
     const j = await a.json() as any;
     if (typeof j?.solvedProblem === "number") {
@@ -140,6 +180,7 @@ async function fetchLeetCode(user: string): Promise<LeetCodeStats> {
         hard: j.hardSolved ?? 0,
         ranking: null,
         url: `https://leetcode.com/u/${user}`,
+        recent,
       };
     }
   }
@@ -154,6 +195,7 @@ async function fetchLeetCode(user: string): Promise<LeetCodeStats> {
         hard: j.hardSolved,
         ranking: j.ranking ?? null,
         url: `https://leetcode.com/u/${user}`,
+        recent,
       };
     }
   }
@@ -161,8 +203,17 @@ async function fetchLeetCode(user: string): Promise<LeetCodeStats> {
 }
 
 async function fetchCodeforces(user: string): Promise<CodeforcesStats> {
-  const res = await safeFetch(`https://codeforces.com/api/user.info?handles=${user}`);
+  const [res, subs] = await Promise.all([
+    safeFetch(`https://codeforces.com/api/user.info?handles=${user}`),
+    safeFetch(`https://codeforces.com/api/user.status?handle=${user}&count=5`),
+  ]);
   if (!res) return null;
+  const sj = subs ? (await subs.json() as any) : null;
+  const recent: RecentSolve[] = (sj?.status === "OK" ? sj.result : []).map((x: any) => ({
+    title: `${x.problem?.contestId ?? ""}${x.problem?.index ?? ""} · ${x.problem?.name ?? "Problem"} (${x.verdict ?? "?"})`,
+    url: `https://codeforces.com/contest/${x.problem?.contestId}/problem/${x.problem?.index}`,
+    at: Number(x.creationTimeSeconds) * 1000,
+  }));
   const j = await res.json() as any;
   if (j?.status !== "OK" || !j.result?.[0]) return null;
   const u = j.result[0];
@@ -173,6 +224,8 @@ async function fetchCodeforces(user: string): Promise<CodeforcesStats> {
     maxRating: u.maxRating ?? null,
     maxRank: u.maxRank ?? null,
     url: `https://codeforces.com/profile/${user}`,
+    lastOnlineAt: u.lastOnlineTimeSeconds ? u.lastOnlineTimeSeconds * 1000 : null,
+    recent,
   };
 }
 
@@ -205,16 +258,26 @@ async function fetchGfg(user: string): Promise<GfgStats> {
   };
 }
 
-export const getCodingStats = createServerFn({ method: "GET" }).handler(async () => {
-  if (CACHE && Date.now() - CACHE.at < CACHE_TTL) return CACHE.data;
-  const [github, leetcode, codeforces, codechef, gfg] = await Promise.all([
-    fetchGithub(HANDLES.github),
-    fetchLeetCode(HANDLES.leetcode),
-    fetchCodeforces(HANDLES.codeforces),
-    fetchCodeChef(HANDLES.codechef),
-    fetchGfg(HANDLES.gfg),
-  ]);
-  const data: AllStats = { github, leetcode, codeforces, codechef, gfg, fetchedAt: Date.now() };
-  CACHE = { at: Date.now(), data };
-  return data;
-});
+const StatsInput = z
+  .object({ githubToken: z.string().trim().max(255).regex(/^[\w-]*$/).optional() })
+  .optional();
+
+export const getCodingStats = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => StatsInput.parse(d))
+  .handler(async ({ data }) => {
+    const visitorToken = data?.githubToken || undefined;
+    if (!visitorToken && CACHE && Date.now() - CACHE.at < CACHE_TTL) return CACHE.data;
+    const token = visitorToken ?? process.env.GITHUB_TOKEN ?? undefined;
+    const [github, leetcode, codeforces, codechef, gfg] = await Promise.all([
+      fetchGithub(HANDLES.github, token),
+      fetchLeetCode(HANDLES.leetcode),
+      fetchCodeforces(HANDLES.codeforces),
+      fetchCodeChef(HANDLES.codechef),
+      fetchGfg(HANDLES.gfg),
+    ]);
+    const data_: AllStats = { github, leetcode, codeforces, codechef, gfg, fetchedAt: Date.now() };
+    if (!visitorToken) CACHE = { at: Date.now(), data: data_ };
+    return data_;
+  });
+
+export const codingStatsQueryKey = ["coding-stats"] as const;
