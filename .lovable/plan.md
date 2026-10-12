@@ -1,55 +1,43 @@
-## 1. Redesign AETHER's body & movement
+# Cosmos landing, project worlds, GitHub token, AETHER commands, live presence
 
-Replace the floating morphing orb with a physical, mechanical companion inspired by **TARS (Interstellar)** and **Rocky (Project Hail Mary)** — no more smooth drifts, no ghost-glide.
+## 1. Landing physics in /cosmos
+- Each planet gets gravity, an atmosphere band and a surface radius.
+- Ship controls: W/S thrust, Shift/Ctrl altitude up/down, Q/E roll, Space retro-burn, L to toggle landing gear.
+- HUD adds altitude, vertical speed, fuel, tilt and a landing-stability meter (green/amber/red).
+- Touchdown checks speed (< 4 m/s) and tilt (< 12°). A soft landing locks the ship to the surface. A hard landing shakes the camera and bounces the ship (no game over).
+- "Take off" (key T or an AETHER command) burns the ship back to orbit.
 
-**New form (`AetherForm3D.tsx` rewrite):**
-- Default body: TARS-style monolith — 4 hinged rectangular slabs stacked vertically, matte dark metal with subtle emissive seams and a small screen face.
-- Locomotion mode: Rocky-style — same slabs re-arrange into a squat, multi-limbed crawler with 3–4 articulated legs that plant and lift.
-- Emotion drives *articulation*, not distortion: excited = faster limb cycle + brighter screen; sleepy = slabs collapse into a low block; focused = upright monolith, screen sharp; playful = cartwheel/segment-flip.
-- Screen face uses tiny animated glyphs (dots/bars) reacting to speech + emotion — no smiley faces.
+## 2. Project deep-dive worlds
+- Flagship projects become named planets in a "Portfolio System": Dravik, SmartAid, Anubhav, Nirbhay AI, OptiTask.
+- Landing opens a full-screen deep-dive panel with tabs: Story, Tech stack, Demos (screens, links, GitHub repo), Timeline.
+- The surface scene has a themed diorama: Earth-like globe for Dravik, clinic for SmartAid, temple hills for Anubhav, command center for Nirbhay.
 
-**New movement (`Aether.tsx` rewrite):**
-- Snap-and-hold motion instead of continuous floating: it *walks/hops/rolls* between anchor points with easing that mimics weight (fast lift, slow plant).
-- Idle: stands still, occasionally shifts weight, screen blinks. No aimless drifting.
-- Escort: reconfigures into crawler mode, physically crawls along the viewport toward the target link, plants, then hops to page-top on route change.
-- Drag: user can grab it; on release it "catches itself" with a small stumble animation.
-- Trail: rare — only during escort/hop, as short thruster puffs, not a constant comet tail.
+## 3. Optional GitHub token
+- Visitors can paste their own GitHub token in a "Boost API" panel on /about. It is kept only in their browser and sent per request.
+- You get a server-side token secret as the default. When it's set, everyone gets higher limits and fresher data.
+- Repo cards show the language, stars, last commit and a link to each repo.
 
-## 2. New page: `/cosmos` — observable universe explorer
+## 4. Universal AETHER command interface
+- Press Cmd/Ctrl+K anywhere to open a command palette with quick actions: Open Dravik, Show certs, Take off, Land, Go to Cosmos, Toggle theme, Show live status.
+- Natural language goes to AETHER's brain, which returns a structured action. Actions that change or move things show a confirm chip ("Open Dravik? Yes / No").
+- New action markers: open project, show section, take off, land, open profile.
+- Smoother avatar: animation easing between forms, idle breathing, reactions on each command (Framer Motion + the existing 3D avatar).
 
-A standalone route where the visitor pilots through a stylized model of everything humans have observed.
+## 5. Live presence dashboard ("Now")
+- A new /now page plus a compact widget in AETHER's HUD.
+- Mini cards: GitHub (recent activity and commits), LeetCode (recent solves), Codeforces (latest contest and rating), CodeChef, GFG, HackerRank.
+- An "Online" indicator based on activity from the last 15 minutes.
+- LinkedIn and Instagram don't offer public live data. They appear as profile cards with links only, not live feeds.
+- Live location: owner-only and opt-in. A private /now/share page you open on your phone sends your location every few minutes. The public site shows it at city level only, never exact coordinates, for your safety. This needs Lovable Cloud to store the latest position and a sign-in so only you can update it.
 
-**Scenes (nested scale levels, seamlessly zoomable):**
-1. **Solar System** — Sun + 8 planets + Pluto + asteroid belt + Kuiper. Click a planet → camera dives, lands on surface with a labeled info card (mass, moons, fun fact, missions).
-2. **Local Stars** — Nearest 30 named stars (Proxima, Sirius, Betelgeuse, etc.) as a 3D starfield with correct relative brightness/color.
-3. **Milky Way** — Spiral galaxy from outside; click regions (Sgr A*, Orion Arm, our Sun's position) to inspect.
-4. **Black holes gallery** — Sgr A*, M87*, Cygnus X-1 with accretion-disk shader and event-horizon lensing effect.
-5. **Deep sky** — Famous nebulae + galaxy clusters as a navigable field (Andromeda, Pillars of Creation, Hubble Deep Field backdrop).
-6. **Observable universe** — Zoomed-out cosmic-web sphere; hovers show large-scale structure names.
+## Technical details
+- Physics: custom per-frame integrator (gravity, drag, thrust) in cosmos.tsx. Delta-clamped damping; no Rapier needed for a single body.
+- Project data moves into src/data/projects.ts and is shared by /projects, cosmos planets and AETHER.
+- GitHub: getCodingStats accepts an optional token header; server falls back to GITHUB_TOKEN; cache key includes token presence. Add events API (/users/:u/events/public).
+- Commands: src/lib/aether-commands.ts registry (id, label, match patterns, run, needsConfirm). Brain returns markers mapped onto it; local regex fast-path for common phrases.
+- Location: Cloud table `presence` (city, updated_at), RLS write limited to the owner role, public read of city only. Uses browser Geolocation + reverse geocode to city.
+- Tests: landing-threshold rule and command matcher.
 
-**Controls:**
-- WASD + mouse-look for free flight, or scroll wheel to zoom between scale levels.
-- "Land" button when near a body — camera drops to surface, HUD info card slides in.
-- Scale indicator (AU / ly / Mpc) in a corner HUD.
-- AETHER rides along on-screen as a small HUD element, reacting in-character to what you're viewing ("that's a lot of nothing", "Sgr A* — four million suns, one bad neighborhood").
-
-**Tech:**
-- R3F scene with instanced meshes for stars, custom shader for accretion disk & sun corona.
-- Data-driven: `src/data/cosmos.ts` holds all bodies (name, radius, distance, color, blurb).
-- Route: `src/routes/cosmos.tsx` + nav link in `SiteNav`.
-- Head metadata set per route (title/description/og).
-
-## 3. Technical notes
-
-- Keep existing `aether-state`, LLM speech, voice — only body + motion change.
-- Postprocessing: reuse Bloom; add subtle chromatic aberration on `/cosmos` only.
-- Perf: instanced starfield, LOD on planets, pause R3F loops when tab hidden.
-- No new packages required (three, drei, r3f, postprocessing already installed).
-
-## 4. Out of scope (ask if you want these)
-
-- Real astronomical positions from live catalogs (would need a data fetch).
-- Multiplayer / shared cursors in `/cosmos`.
-- VR controls.
-
-Once you approve I'll build both in one pass — companion redesign first, then `/cosmos`.
+## Open points
+- Lovable Cloud gets enabled for location and sign-in.
+- You'll be asked for a GitHub personal access token (read-only public scope).
