@@ -5,6 +5,9 @@ import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { motion, AnimatePresence } from "framer-motion";
+import { evaluateTouchdown, stabilityOf, type Stability } from "@/lib/landing";
+import { getDeepDive } from "@/data/projects";
+import { COSMOS_EVENT } from "@/lib/aether-commands";
 
 export const Route = createFileRoute("/cosmos")({
   head: () => ({
