@@ -405,23 +405,31 @@ function Universe({ onScaleChange }: { onScaleChange: (s: string) => void }) {
 function SolarSystem({
   onSelect,
   onLandingChange,
+  planetPos,
+  landed,
 }: {
   onSelect: (b: Body) => void;
   onLandingChange: (b: Body | null) => void;
+  planetPos: Map<string, THREE.Vector3>;
+  landed: Body | null;
 }) {
-  const planetRefs = useRef<Record<string, THREE.Group | null>>({});
   const { camera } = useThree();
+  const lastNear = useRef<string | null>(null);
 
-  // Landing detection — nearest planet within radius+3
+  // Landing-zone detection — nearest planet within radius+4
   useFrame(() => {
     let nearest: { b: Body; d: number } | null = null;
     for (const p of PLANETS) {
-      const g = planetRefs.current[p.id];
-      if (!g) continue;
-      const d = g.position.distanceTo(camera.position);
+      const pos = planetPos.get(p.id);
+      if (!pos) continue;
+      const d = pos.distanceTo(camera.position);
       if (d < p.radius + 4 && (!nearest || d < nearest.d)) nearest = { b: p, d };
     }
-    onLandingChange(nearest?.b ?? null);
+    const id = nearest?.b.id ?? null;
+    if (id !== lastNear.current) {
+      lastNear.current = id;
+      onLandingChange(nearest?.b ?? null);
+    }
   });
 
   return (
@@ -432,7 +440,12 @@ function SolarSystem({
         <OrbitingPlanet
           key={b.id}
           body={b}
-          groupRef={(el) => { planetRefs.current[b.id] = el; }}
+          frozen={landed?.id === b.id}
+          track={(pos) => {
+            const v = planetPos.get(b.id);
+            if (v) v.copy(pos);
+            else planetPos.set(b.id, pos.clone());
+          }}
           onClick={() => onSelect(b)}
         />
       ))}
