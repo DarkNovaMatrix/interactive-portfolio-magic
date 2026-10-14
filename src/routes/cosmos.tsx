@@ -157,6 +157,28 @@ function CosmosPage() {
             <div>velocity <span className="text-white">{speed.toFixed(1)}</span> u/s</div>
             <div>distance <span className="text-white">{formatDist(distance)}</span></div>
             <div>frame     <span className="text-white">{scaleLabel}</span></div>
+            {tele && (
+              <>
+                <div className="opacity-70 mt-2">— approach · {tele.near} —</div>
+                <div>altitude  <span className="text-white">{tele.alt.toFixed(2)} u</span></div>
+                <div>v-speed   <span className="text-white">{tele.vspeed.toFixed(1)} m/s</span></div>
+                <div>tilt      <span className="text-white">{tele.tilt.toFixed(0)}°</span></div>
+                <div>
+                  stability{" "}
+                  <span
+                    className={
+                      tele.stab === "stable"
+                        ? "text-emerald-300"
+                        : tele.stab === "marginal"
+                          ? "text-amber-300"
+                          : "text-red-400"
+                    }
+                  >
+                    ● {tele.stab}
+                  </span>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Right: controls legend */}
@@ -164,7 +186,8 @@ function CosmosPage() {
             <div><kbd>W A S D</kbd> thrust · strafe</div>
             <div><kbd>Space</kbd> up · <kbd>Shift</kbd> down</div>
             <div><kbd>Mouse</kbd> look · <kbd>Q E</kbd> roll</div>
-            <div><kbd>F</kbd> land · <kbd>R</kbd> return home</div>
+            <div><kbd>F</kbd> assisted landing · <kbd>T</kbd> take off</div>
+            <div><kbd>R</kbd> return home</div>
           </div>
         </div>
 
@@ -173,17 +196,28 @@ function CosmosPage() {
 
         {/* Landing prompt */}
         <AnimatePresence>
-          {landing && (
+          {landing && !landed && (
             <motion.button
               key="land"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              onClick={() => setSelected(landing)}
+              onClick={() => controls.current.assist(true)}
               className="pointer-events-auto absolute left-1/2 -translate-x-1/2 bottom-32 px-4 py-2 rounded-full bg-[#5ad4ff]/15 border border-[#5ad4ff] text-[11px] uppercase tracking-widest text-[#5ad4ff] hover:bg-[#5ad4ff]/25"
             >
-              [F] land on {landing.name}
+              [F] assisted landing on {landing.name}
             </motion.button>
+          )}
+        </AnimatePresence>
+
+        {/* Deep-dive panel after touchdown */}
+        <AnimatePresence>
+          {landed && (
+            <DeepDivePanel
+              key={`dive-${landed.id}`}
+              body={landed}
+              onTakeoff={() => controls.current.takeoff()}
+            />
           )}
         </AnimatePresence>
 
