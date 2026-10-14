@@ -478,10 +478,11 @@ function SunMesh({ body }: { body: Body }) {
 }
 
 function OrbitingPlanet({
-  body, groupRef, onClick,
+  body, track, frozen, onClick,
 }: {
   body: Body;
-  groupRef: (el: THREE.Group | null) => void;
+  track: (pos: THREE.Vector3) => void;
+  frozen: boolean;
   onClick: () => void;
 }) {
   const inner = useRef<THREE.Mesh>(null);
@@ -490,10 +491,11 @@ function OrbitingPlanet({
   const [hover, setHover] = useState(false);
 
   useFrame((_, dt) => {
-    angle.current += body.speed * dt * 0.4;
+    if (!frozen) angle.current += body.speed * dt * 0.4;
     if (outer.current) {
       outer.current.position.x = Math.cos(angle.current) * body.orbit;
       outer.current.position.z = Math.sin(angle.current) * body.orbit;
+      track(outer.current.position);
     }
     if (inner.current) inner.current.rotation.y += dt * 0.3;
   });
@@ -504,7 +506,6 @@ function OrbitingPlanet({
       <group
         ref={(el) => {
           outer.current = el;
-          groupRef(el);
         }}
       >
         <mesh
