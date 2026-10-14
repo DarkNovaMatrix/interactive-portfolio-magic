@@ -5,6 +5,9 @@ import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { motion, AnimatePresence } from "framer-motion";
+import { evaluateTouchdown, stabilityOf, type Stability } from "@/lib/landing";
+import { getDeepDive } from "@/data/projects";
+import { COSMOS_EVENT } from "@/lib/aether-commands";
 
 export const Route = createFileRoute("/cosmos")({
   head: () => ({
@@ -58,13 +61,35 @@ const PLANETS: Body[] = [
 
 /* ═══════════════════════════════ Page ═══════════════════════════════ */
 
+type Telemetry = { alt: number; vspeed: number; tilt: number; stab: Stability; near: string } | null;
+
 function CosmosPage() {
   const [selected, setSelected] = useState<Body | null>(null);
   const [scaleLabel, setScaleLabel] = useState("SOLAR");
   const [speed, setSpeed] = useState(0);
   const [distance, setDistance] = useState(0);
   const [landing, setLanding] = useState<Body | null>(null);
+  const [landed, setLanded] = useState<Body | null>(null);
+  const [tele, setTele] = useState<Telemetry>(null);
   const [mobile, setMobile] = useState({ f: 0, s: 0, u: 0 });
+  /** Live planet world positions, written every frame by OrbitingPlanet. */
+  const planetPos = useRef(new Map<string, THREE.Vector3>());
+  /** Bridge so DOM buttons / AETHER commands can steer the pilot. */
+  const controls = useRef<{ takeoff: () => void; assist: (on: boolean) => void }>({
+    takeoff: () => {},
+    assist: () => {},
+  });
+
+  // AETHER commands: "take off" / "land" arrive as window events.
+  useEffect(() => {
+    const onCmd = (e: Event) => {
+      const action = (e as CustomEvent).detail;
+      if (action === "takeoff") controls.current.takeoff();
+      else if (action === "land") controls.current.assist(true);
+    };
+    window.addEventListener(COSMOS_EVENT, onCmd);
+    return () => window.removeEventListener(COSMOS_EVENT, onCmd);
+  }, []);
 
   return (
     <div className="fixed inset-0 bg-black text-white overflow-hidden select-none">
@@ -81,11 +106,18 @@ function CosmosPage() {
           <SolarSystem
             onSelect={setSelected}
             onLandingChange={setLanding}
+            planetPos={planetPos.current}
+            landed={landed}
           />
           <PilotCamera
             onSpeed={setSpeed}
             onDistance={setDistance}
             mobile={mobile}
+            planetPos={planetPos.current}
+            landed={landed}
+            setLanded={setLanded}
+            onTelemetry={setTele}
+            controls={controls.current}
           />
         </Suspense>
         <EffectComposer multisampling={0}>
@@ -125,6 +157,28 @@ function CosmosPage() {
             <div>velocity <span className="text-white">{speed.toFixed(1)}</span> u/s</div>
             <div>distance <span className="text-white">{formatDist(distance)}</span></div>
             <div>frame     <span className="text-white">{scaleLabel}</span></div>
+            {tele && (
+              <>
+                <div className="opacity-70 mt-2">— approach · {tele.near} —</div>
+                <div>altitude  <span className="text-white">{tele.alt.toFixed(2)} u</span></div>
+                <div>v-speed   <span className="text-white">{tele.vspeed.toFixed(1)} m/s</span></div>
+                <div>tilt      <span className="text-white">{tele.tilt.toFixed(0)}°</span></div>
+                <div>
+                  stability{" "}
+                  <span
+                    className={
+                      tele.stab === "stable"
+                        ? "text-emerald-300"
+                        : tele.stab === "marginal"
+                          ? "text-amber-300"
+                          : "text-red-400"
+                    }
+                  >
+                    ● {tele.stab}
+                  </span>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Right: controls legend */}
@@ -132,7 +186,8 @@ function CosmosPage() {
             <div><kbd>W A S D</kbd> thrust · strafe</div>
             <div><kbd>Space</kbd> up · <kbd>Shift</kbd> down</div>
             <div><kbd>Mouse</kbd> look · <kbd>Q E</kbd> roll</div>
-            <div><kbd>F</kbd> land · <kbd>R</kbd> return home</div>
+            <div><kbd>F</kbd> assisted landing · <kbd>T</kbd> take off</div>
+            <div><kbd>R</kbd> return home</div>
           </div>
         </div>
 
@@ -141,17 +196,28 @@ function CosmosPage() {
 
         {/* Landing prompt */}
         <AnimatePresence>
-          {landing && (
+          {landing && !landed && (
             <motion.button
               key="land"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              onClick={() => setSelected(landing)}
+              onClick={() => controls.current.assist(true)}
               className="pointer-events-auto absolute left-1/2 -translate-x-1/2 bottom-32 px-4 py-2 rounded-full bg-[#5ad4ff]/15 border border-[#5ad4ff] text-[11px] uppercase tracking-widest text-[#5ad4ff] hover:bg-[#5ad4ff]/25"
             >
-              [F] land on {landing.name}
+              [F] assisted landing on {landing.name}
             </motion.button>
+          )}
+        </AnimatePresence>
+
+        {/* Deep-dive panel after touchdown */}
+        <AnimatePresence>
+          {landed && (
+            <DeepDivePanel
+              key={`dive-${landed.id}`}
+              body={landed}
+              onTakeoff={() => controls.current.takeoff()}
+            />
           )}
         </AnimatePresence>
 
@@ -339,23 +405,31 @@ function Universe({ onScaleChange }: { onScaleChange: (s: string) => void }) {
 function SolarSystem({
   onSelect,
   onLandingChange,
+  planetPos,
+  landed,
 }: {
   onSelect: (b: Body) => void;
   onLandingChange: (b: Body | null) => void;
+  planetPos: Map<string, THREE.Vector3>;
+  landed: Body | null;
 }) {
-  const planetRefs = useRef<Record<string, THREE.Group | null>>({});
   const { camera } = useThree();
+  const lastNear = useRef<string | null>(null);
 
-  // Landing detection — nearest planet within radius+3
+  // Landing-zone detection — nearest planet within radius+4
   useFrame(() => {
     let nearest: { b: Body; d: number } | null = null;
     for (const p of PLANETS) {
-      const g = planetRefs.current[p.id];
-      if (!g) continue;
-      const d = g.position.distanceTo(camera.position);
+      const pos = planetPos.get(p.id);
+      if (!pos) continue;
+      const d = pos.distanceTo(camera.position);
       if (d < p.radius + 4 && (!nearest || d < nearest.d)) nearest = { b: p, d };
     }
-    onLandingChange(nearest?.b ?? null);
+    const id = nearest?.b.id ?? null;
+    if (id !== lastNear.current) {
+      lastNear.current = id;
+      onLandingChange(nearest?.b ?? null);
+    }
   });
 
   return (
@@ -366,7 +440,12 @@ function SolarSystem({
         <OrbitingPlanet
           key={b.id}
           body={b}
-          groupRef={(el) => { planetRefs.current[b.id] = el; }}
+          frozen={landed?.id === b.id}
+          track={(pos) => {
+            const v = planetPos.get(b.id);
+            if (v) v.copy(pos);
+            else planetPos.set(b.id, pos.clone());
+          }}
           onClick={() => onSelect(b)}
         />
       ))}
@@ -399,10 +478,11 @@ function SunMesh({ body }: { body: Body }) {
 }
 
 function OrbitingPlanet({
-  body, groupRef, onClick,
+  body, track, frozen, onClick,
 }: {
   body: Body;
-  groupRef: (el: THREE.Group | null) => void;
+  track: (pos: THREE.Vector3) => void;
+  frozen: boolean;
   onClick: () => void;
 }) {
   const inner = useRef<THREE.Mesh>(null);
@@ -411,10 +491,11 @@ function OrbitingPlanet({
   const [hover, setHover] = useState(false);
 
   useFrame((_, dt) => {
-    angle.current += body.speed * dt * 0.4;
+    if (!frozen) angle.current += body.speed * dt * 0.4;
     if (outer.current) {
       outer.current.position.x = Math.cos(angle.current) * body.orbit;
       outer.current.position.z = Math.sin(angle.current) * body.orbit;
+      track(outer.current.position);
     }
     if (inner.current) inner.current.rotation.y += dt * 0.3;
   });
@@ -425,7 +506,6 @@ function OrbitingPlanet({
       <group
         ref={(el) => {
           outer.current = el;
-          groupRef(el);
         }}
       >
         <mesh
@@ -485,10 +565,20 @@ function PilotCamera({
   onSpeed,
   onDistance,
   mobile,
+  planetPos,
+  landed,
+  setLanded,
+  onTelemetry,
+  controls,
 }: {
   onSpeed: (s: number) => void;
   onDistance: (d: number) => void;
   mobile: { f: number; s: number; u: number };
+  planetPos: Map<string, THREE.Vector3>;
+  landed: Body | null;
+  setLanded: (b: Body | null) => void;
+  onTelemetry: (t: Telemetry) => void;
+  controls: { takeoff: () => void; assist: (on: boolean) => void };
 }) {
   const { camera, gl } = useThree();
   const keys = useRef<Record<string, boolean>>({});
@@ -498,16 +588,49 @@ function PilotCamera({
   const roll = useRef(0);
   const home = useRef(new THREE.Vector3(0, 8, 45));
   const pointerLocked = useRef(false);
+  const landedRef = useRef<Body | null>(null);
+  const assist = useRef(false);
+  const shake = useRef(0);
+  const teleAcc = useRef(0);
+
+  useEffect(() => {
+    landedRef.current = landed;
+  }, [landed]);
+
+  // Expose takeoff / assist to DOM buttons and AETHER commands.
+  useEffect(() => {
+    controls.assist = (on) => {
+      assist.current = on;
+    };
+    controls.takeoff = () => {
+      const b = landedRef.current;
+      if (!b) return;
+      const pos = planetPos.get(b.id);
+      landedRef.current = null;
+      setLanded(null);
+      assist.current = false;
+      if (pos) {
+        const n = camera.position.clone().sub(pos).normalize();
+        velocity.current.copy(n.multiplyScalar(9));
+      }
+    };
+  }, [controls, camera, planetPos, setLanded]);
 
   useEffect(() => {
     const dom = gl.domElement;
     const onKey = (e: KeyboardEvent, down: boolean) => {
       keys.current[e.code] = down;
-      if (down && e.code === "KeyR") {
+      if (!down) return;
+      if (e.code === "KeyR") {
+        landedRef.current = null;
+        setLanded(null);
+        assist.current = false;
         camera.position.copy(home.current);
         yaw.current = 0; pitch.current = -0.15; roll.current = 0;
         velocity.current.set(0, 0, 0);
       }
+      if (e.code === "KeyF") assist.current = true;
+      if (e.code === "KeyT") controls.takeoff();
     };
     const kd = (e: KeyboardEvent) => onKey(e, true);
     const ku = (e: KeyboardEvent) => onKey(e, false);
@@ -537,10 +660,38 @@ function PilotCamera({
       document.removeEventListener("pointerlockchange", onLock);
       document.removeEventListener("mousemove", onMove);
     };
-  }, [camera, gl]);
+  }, [camera, gl, controls, setLanded]);
 
-  useFrame((_, dt) => {
+  useFrame((_, rawDt) => {
+    const dt = Math.min(rawDt, 0.05);
     const k = keys.current;
+
+    // Nearest planet
+    let near: { b: Body; pos: THREE.Vector3; d: number } | null = null;
+    for (const p of PLANETS) {
+      const pos = planetPos.get(p.id);
+      if (!pos) continue;
+      const d = pos.distanceTo(camera.position);
+      if (!near || d < near.d) near = { b: p, pos, d };
+    }
+
+    // ── Landed: locked to the surface, look-around only ──
+    if (landedRef.current && near && near.b.id === landedRef.current.id) {
+      const n = camera.position.clone().sub(near.pos).normalize();
+      camera.position.copy(near.pos).addScaledVector(n, near.b.radius + 0.35);
+      velocity.current.set(0, 0, 0);
+      const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(pitch.current, yaw.current, 0, "YXZ"));
+      camera.quaternion.slerp(q, 0.25);
+      teleAcc.current += dt;
+      if (teleAcc.current > 0.2) {
+        teleAcc.current = 0;
+        onTelemetry({ alt: 0, vspeed: 0, tilt: 0, stab: "stable", near: near.b.name });
+        onSpeed(0);
+        onDistance(camera.position.length());
+      }
+      return;
+    }
+
     // Roll
     if (k["KeyQ"]) roll.current += dt * 1.2;
     if (k["KeyE"]) roll.current -= dt * 1.2;
@@ -556,7 +707,8 @@ function PilotCamera({
 
     // Speed scales with distance from origin so we can cross the universe.
     const dist = camera.position.length();
-    const baseSpeed = 15 + dist * 0.08;
+    const nearPlanet = near && near.d < near.b.radius + 9;
+    const baseSpeed = nearPlanet ? 3.5 : 15 + dist * 0.08;
     const boost = (k["ShiftLeft"] && k["KeyW"]) ? 4 : 1;
 
     const accel = new THREE.Vector3();
@@ -573,14 +725,195 @@ function PilotCamera({
     if (mobile.u) accel.addScaledVector(up, baseSpeed * mobile.u);
 
     velocity.current.addScaledVector(accel, dt);
-    velocity.current.multiplyScalar(0.92); // drag
+
+    // ── Planetary physics: gravity, alignment, touchdown ──
+    let tele: Telemetry = null;
+    if (near && near.d < near.b.radius + 9) {
+      const n = camera.position.clone().sub(near.pos).normalize(); // surface "up"
+      const alt = near.d - near.b.radius;
+      // Gravity well, falls off with altitude.
+      const g = 7 * Math.pow(near.b.radius / Math.max(near.d, 0.01), 2);
+      velocity.current.addScaledVector(n, -g * dt);
+
+      const vspeed = velocity.current.dot(n); // + ascending, − descending
+      const camUp = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
+      const tilt = THREE.MathUtils.radToDeg(camUp.angleTo(n));
+
+      // Assisted landing: hold descent at a safe rate, kill sideways drift.
+      if (assist.current) {
+        const target = -1.6;
+        const err = target - vspeed;
+        velocity.current.addScaledVector(n, err * Math.min(1, dt * 3));
+        const radial = n.clone().multiplyScalar(vspeed);
+        const tangential = velocity.current.clone().sub(radial);
+        velocity.current.sub(tangential.multiplyScalar(Math.min(1, dt * 2)));
+        // Level the ship with the ground.
+        const look = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+        const m = new THREE.Matrix4().lookAt(new THREE.Vector3(), look, n);
+        camera.quaternion.slerp(new THREE.Quaternion().setFromRotationMatrix(m), Math.min(1, dt * 2.5));
+      }
+
+      // Touchdown check
+      if (alt <= 0.4 && vspeed < 0) {
+        const result = evaluateTouchdown(vspeed, tilt);
+        if (result === "soft") {
+          landedRef.current = near.b;
+          setLanded(near.b);
+          assist.current = false;
+          velocity.current.set(0, 0, 0);
+        } else {
+          // Hard landing: bounce + shake, no game over.
+          velocity.current.addScaledVector(n, -vspeed * 1.5);
+          shake.current = 1;
+          assist.current = false;
+        }
+      }
+
+      tele = { alt: Math.max(0, alt), vspeed, tilt, stab: stabilityOf(vspeed, tilt), near: near.b.name };
+    } else {
+      assist.current = false;
+    }
+
+    velocity.current.multiplyScalar(Math.exp(-2.2 * dt)); // frame-rate-independent drag
     camera.position.addScaledVector(velocity.current, dt);
 
-    onSpeed(velocity.current.length());
-    onDistance(camera.position.length());
+    // Camera shake after a hard landing
+    if (shake.current > 0.01) {
+      camera.position.x += (Math.random() - 0.5) * shake.current * 0.12;
+      camera.position.y += (Math.random() - 0.5) * shake.current * 0.12;
+      shake.current *= Math.exp(-4 * dt);
+    }
+
+    teleAcc.current += dt;
+    if (teleAcc.current > 0.15) {
+      teleAcc.current = 0;
+      onTelemetry(tele);
+      onSpeed(velocity.current.length());
+      onDistance(camera.position.length());
+    }
   });
 
   return null;
+}
+
+/* ═══════════════════════════════ Deep-dive panel ═══════════════════════════════ */
+
+const DIVE_TABS = ["Story", "Tech", "Demos", "Timeline"] as const;
+
+function DeepDivePanel({ body, onTakeoff }: { body: Body; onTakeoff: () => void }) {
+  const [tab, setTab] = useState<(typeof DIVE_TABS)[number]>("Story");
+  const dive = getDeepDive(body.id);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="pointer-events-auto absolute inset-0 z-20 flex items-center justify-center bg-black/70 backdrop-blur-md p-4"
+    >
+      <motion.div
+        initial={{ y: 40, scale: 0.97 }}
+        animate={{ y: 0, scale: 1 }}
+        transition={{ type: "spring", stiffness: 220, damping: 26 }}
+        className="w-full max-w-2xl max-h-[82vh] overflow-y-auto rounded-2xl border border-white/15 bg-[#070a14]/95 p-6 md:p-8"
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.3em]" style={{ color: body.color }}>
+              touched down · {body.project?.tag ?? "stellar body"}
+            </div>
+            <h2 className="serif italic text-4xl mt-1">{dive?.title ?? body.name}</h2>
+          </div>
+          <button
+            onClick={onTakeoff}
+            className="shrink-0 text-[11px] uppercase tracking-widest px-4 py-2 rounded-full bg-[#5ad4ff] text-[#08131c] font-semibold hover:scale-105 transition"
+          >
+            Take off [T]
+          </button>
+        </div>
+
+        <div className="mt-5 flex gap-2 border-b border-white/10 pb-3">
+          {DIVE_TABS.map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`text-[11px] uppercase tracking-widest px-3 py-1.5 rounded-full border transition ${
+                tab === t
+                  ? "border-[#5ad4ff] text-[#5ad4ff] bg-[#5ad4ff]/10"
+                  : "border-white/15 text-white/60 hover:text-white"
+              }`}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-5 text-sm leading-relaxed text-white/85">
+          {tab === "Story" && (
+            <div className="space-y-3">
+              {(dive?.story ?? [body.project?.blurb ?? ""]).map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
+            </div>
+          )}
+          {tab === "Tech" && (
+            <div className="space-y-4">
+              {(dive?.tech ?? []).map((g) => (
+                <div key={g.layer}>
+                  <div className="text-[10px] uppercase tracking-widest text-white/50">{g.layer}</div>
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
+                    {g.items.map((it) => (
+                      <span key={it} className="text-[12px] px-2.5 py-1 rounded-full border border-white/15 bg-white/5">
+                        {it}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {tab === "Demos" && (
+            <div className="space-y-2.5">
+              {(dive?.links ?? []).length === 0 && <p className="text-white/50">No public demos yet.</p>}
+              {(dive?.links ?? []).map((l) => (
+                <a
+                  key={l.url}
+                  href={l.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center justify-between rounded-xl border border-white/15 px-4 py-3 hover:bg-white/5 transition"
+                >
+                  <span>{l.label}</span>
+                  <span className="text-[#5ad4ff] text-xs uppercase tracking-widest">open ↗</span>
+                </a>
+              ))}
+              <Link
+                to="/projects"
+                className="flex items-center justify-between rounded-xl border border-white/15 px-4 py-3 hover:bg-white/5 transition"
+              >
+                <span>Full project archive</span>
+                <span className="text-[#5ad4ff] text-xs uppercase tracking-widest">open →</span>
+              </Link>
+            </div>
+          )}
+          {tab === "Timeline" && (
+            <ol className="relative border-l border-white/15 ml-2 space-y-5">
+              {(dive?.timeline ?? []).map((t, i) => (
+                <li key={i} className="pl-5 relative">
+                  <span
+                    className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full"
+                    style={{ background: body.color }}
+                  />
+                  <div className="text-[10px] uppercase tracking-widest text-white/50">{t.when}</div>
+                  <div className="mt-0.5">{t.what}</div>
+                </li>
+              ))}
+            </ol>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
 }
 
 /* ═══════════════════════════════ Mobile controls ═══════════════════════════════ */
