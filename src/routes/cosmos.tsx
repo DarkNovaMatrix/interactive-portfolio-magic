@@ -61,13 +61,35 @@ const PLANETS: Body[] = [
 
 /* ═══════════════════════════════ Page ═══════════════════════════════ */
 
+type Telemetry = { alt: number; vspeed: number; tilt: number; stab: Stability; near: string } | null;
+
 function CosmosPage() {
   const [selected, setSelected] = useState<Body | null>(null);
   const [scaleLabel, setScaleLabel] = useState("SOLAR");
   const [speed, setSpeed] = useState(0);
   const [distance, setDistance] = useState(0);
   const [landing, setLanding] = useState<Body | null>(null);
+  const [landed, setLanded] = useState<Body | null>(null);
+  const [tele, setTele] = useState<Telemetry>(null);
   const [mobile, setMobile] = useState({ f: 0, s: 0, u: 0 });
+  /** Live planet world positions, written every frame by OrbitingPlanet. */
+  const planetPos = useRef(new Map<string, THREE.Vector3>());
+  /** Bridge so DOM buttons / AETHER commands can steer the pilot. */
+  const controls = useRef<{ takeoff: () => void; assist: (on: boolean) => void }>({
+    takeoff: () => {},
+    assist: () => {},
+  });
+
+  // AETHER commands: "take off" / "land" arrive as window events.
+  useEffect(() => {
+    const onCmd = (e: Event) => {
+      const action = (e as CustomEvent).detail;
+      if (action === "takeoff") controls.current.takeoff();
+      else if (action === "land") controls.current.assist(true);
+    };
+    window.addEventListener(COSMOS_EVENT, onCmd);
+    return () => window.removeEventListener(COSMOS_EVENT, onCmd);
+  }, []);
 
   return (
     <div className="fixed inset-0 bg-black text-white overflow-hidden select-none">
@@ -84,11 +106,18 @@ function CosmosPage() {
           <SolarSystem
             onSelect={setSelected}
             onLandingChange={setLanding}
+            planetPos={planetPos.current}
+            landed={landed}
           />
           <PilotCamera
             onSpeed={setSpeed}
             onDistance={setDistance}
             mobile={mobile}
+            planetPos={planetPos.current}
+            landed={landed}
+            setLanded={setLanded}
+            onTelemetry={setTele}
+            controls={controls.current}
           />
         </Suspense>
         <EffectComposer multisampling={0}>
