@@ -5,11 +5,14 @@ import { useServerFn } from "@tanstack/react-start";
 import { Send, ChevronDown, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { aetherChat } from "@/lib/aether-brain.functions";
 import { useTheme } from "@/lib/theme";
+import { matchCommand, type Command } from "@/lib/aether-commands";
+import { useCommandRunner } from "@/lib/use-aether-command";
 import { AetherAvatar3D, type AetherForm, type AetherMood } from "./AetherAvatar3D";
+import { CommandPalette } from "./CommandPalette";
 
 export type ChatMsg = { role: "user" | "assistant"; content: string; ts: number };
 
-const NAV_ALLOWED = new Set(["/", "/about", "/projects", "/cosmos", "/links", "/aether"]);
+const NAV_ALLOWED = new Set(["/", "/about", "/projects", "/cosmos", "/links", "/aether", "/now"]);
 
 /** Parse marker tokens like "nav:/projects" into typed actions and apply them. */
 function applyMarkers(
