@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Activity, ExternalLink, Github, Trophy, Code2, Flame, Globe } from "lucide-react";
+import { Activity, ExternalLink, GitBranch, Trophy, Code2, Flame, Globe } from "lucide-react";
 import { codingStatsQueryKey, getCodingStats, type AllStats } from "@/lib/coding-stats.functions";
 import { SOCIALS } from "@/data/socials";
 import { SiteNav } from "@/components/portfolio/SiteNav";
