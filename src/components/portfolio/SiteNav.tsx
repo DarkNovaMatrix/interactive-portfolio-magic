@@ -11,6 +11,7 @@ const LINKS: [string, string][] = [
   ["Work", "/projects"],
   ["About", "/about"],
   ["Cosmos", "/cosmos"],
+  ["Now", "/now"],
   ["Aether", "/aether"],
   ["Links", "/links"],
 ];
