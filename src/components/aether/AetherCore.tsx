@@ -218,6 +218,7 @@ export function AetherCore() {
 
   return (
     <>
+      <CommandPalette />
       {/* Floating core */}
       <AnimatePresence>
         {!open && (
@@ -322,6 +323,40 @@ export function AetherCore() {
                 </div>
               )}
             </div>
+
+            {/* Command confirmation chip */}
+            {pendingCmd && (
+              <div className="px-3 pb-2">
+                <div className="flex items-center gap-2 rounded-xl border border-amber-300/30 bg-amber-400/10 px-3 py-2 text-[12px] text-amber-200">
+                  <span className="flex-1">{pendingCmd.label}?</span>
+                  <button
+                    onClick={() => {
+                      runCommand(pendingCmd);
+                      setMessages((prev) => [
+                        ...prev,
+                        { role: "assistant", content: `Done — ${pendingCmd.label.toLowerCase()}.`, ts: Date.now() },
+                      ]);
+                      setPendingCmd(null);
+                    }}
+                    className="px-2.5 py-1 rounded-full bg-amber-300 text-black text-[11px] font-semibold uppercase tracking-wider"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    onClick={() => {
+                      setMessages((prev) => [
+                        ...prev,
+                        { role: "assistant", content: "Cancelled. Staying put.", ts: Date.now() },
+                      ]);
+                      setPendingCmd(null);
+                    }}
+                    className="px-2.5 py-1 rounded-full border border-white/20 text-[11px] uppercase tracking-wider text-white/70"
+                  >
+                    No
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Suggestions */}
             {messages.length <= 1 && (
