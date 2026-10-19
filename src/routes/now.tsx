@@ -168,7 +168,7 @@ function RecentList({ items }: { items: { title: string; url: string; at: number
 function GithubCard({ stats }: { stats: AllStats }) {
   const g = stats.github;
   return (
-    <Card title="GitHub" icon={<Github size={13} />} url={g?.url} delay={0}>
+    <Card title="GitHub" icon={<GitBranch size={13} />} url={g?.url} delay={0}>
       {g ? (
         <>
           <div className="flex items-center gap-3">
