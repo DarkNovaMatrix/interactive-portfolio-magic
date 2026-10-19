@@ -103,6 +103,7 @@ export function AetherCore() {
   const routerState = useRouterState();
   const { theme, toggle } = useTheme();
   const chat = useServerFn(aetherChat);
+  const runCommand = useCommandRunner();
 
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -110,6 +111,7 @@ export function AetherCore() {
   const [form, setForm] = useState<AetherForm>("orb");
   const [mood, setMood] = useState<AetherMood>("curious");
   const [input, setInput] = useState("");
+  const [pendingCmd, setPendingCmd] = useState<Command | null>(null);
   const [messages, setMessages] = useState<ChatMsg[]>(() => [
     {
       role: "assistant",
@@ -156,6 +158,27 @@ export function AetherCore() {
       setInput("");
       const next: ChatMsg[] = [...messages, { role: "user", content: trimmed, ts: Date.now() }];
       setMessages(next);
+
+      // Fast-path: imperative requests ("open dravik", "take off") run as
+      // commands instead of going to the AI brain.
+      const cmd = matchCommand(trimmed);
+      if (cmd) {
+        if (cmd.confirm) {
+          setPendingCmd(cmd);
+          setMessages((prev) => [
+            ...prev,
+            { role: "assistant", content: `Ready to **${cmd.label}** — confirm below.`, ts: Date.now() },
+          ]);
+        } else {
+          runCommand(cmd);
+          setMessages((prev) => [
+            ...prev,
+            { role: "assistant", content: `On it — ${cmd.label.toLowerCase()}.`, ts: Date.now() },
+          ]);
+        }
+        return;
+      }
+
       setBusy(true);
       try {
         const res = await chat({
