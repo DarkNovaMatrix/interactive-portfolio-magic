@@ -1,11 +1,27 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
+import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Activity, ExternalLink, GitBranch, Trophy, Code2, Flame, Globe } from "lucide-react";
+import { Activity, ExternalLink, GitBranch, Trophy, Code2, Flame, Globe, MapPin } from "lucide-react";
 import { codingStatsQueryKey, getCodingStats, type AllStats } from "@/lib/coding-stats.functions";
 import { SOCIALS } from "@/data/socials";
+import { supabase } from "@/integrations/supabase/client";
 import { SiteNav } from "@/components/portfolio/SiteNav";
 import { SiteFooter } from "@/components/portfolio/SiteFooter";
+
+const presenceQuery = queryOptions({
+  queryKey: ["presence"],
+  queryFn: async () => {
+    const { data } = await supabase
+      .from("presence")
+      .select("city, updated_at")
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    return data;
+  },
+  refetchInterval: 60_000,
+  staleTime: 30_000,
+});
 
 const statsQuery = queryOptions({
   queryKey: codingStatsQueryKey,
@@ -82,6 +98,7 @@ function NowPage() {
         </p>
 
         <div className="mt-10 grid gap-4 md:grid-cols-2">
+          <LocationCard />
           <GithubCard stats={stats} />
           <LeetCodeCard stats={stats} />
           <CodeforcesCard stats={stats} />
@@ -162,6 +179,26 @@ function RecentList({ items }: { items: { title: string; url: string; at: number
         </a>
       ))}
     </div>
+  );
+}
+
+function LocationCard() {
+  const { data } = useQuery(presenceQuery);
+  return (
+    <Card title="Where I am" icon={<MapPin size={13} />}>
+      {data ? (
+        <>
+          <div className="text-2xl font-semibold">{data.city}</div>
+          <div className="text-[11px] text-muted-foreground mt-1">
+            updated {timeAgo(Date.parse(data.updated_at))} · city-level only, never exact
+          </div>
+        </>
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          Location beacon is off right now — when it's on, my current city shows here live.
+        </p>
+      )}
+    </Card>
   );
 }
 

@@ -1,9 +1,42 @@
-import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { SOCIALS } from "@/data/socials";
+import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "./ThemeToggle";
 import { useAetherEscort } from "./Aether";
+
+/** Session-aware owner link: "Sign in" when logged out, "Beacon" (location control) when in. */
+function AuthLink() {
+  const navigate = useNavigate();
+  const [signedIn, setSignedIn] = useState(false);
+
+  useEffect(() => {
+    void supabase.auth.getUser().then(({ data }) => setSignedIn(!!data.user));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => setSignedIn(!!session));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    navigate({ to: "/", replace: true });
+  };
+
+  return signedIn ? (
+    <span className="flex items-center gap-3">
+      <Link to="/now-share" className="hover-underline" title="Location beacon control">
+        Beacon
+      </Link>
+      <button onClick={signOut} className="hover-underline uppercase tracking-widest text-xs">
+        Out
+      </button>
+    </span>
+  ) : (
+    <Link to="/auth" className="hover-underline" title="Owner sign-in">
+      Sign in
+    </Link>
+  );
+}
 
 
 const LINKS: [string, string][] = [
@@ -47,6 +80,7 @@ export function SiteNav() {
               {s.name.split(" ")[0]}
             </a>
           ))}
+          <AuthLink />
           <ThemeToggle />
 
         </nav>
