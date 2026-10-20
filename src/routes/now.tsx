@@ -182,6 +182,26 @@ function RecentList({ items }: { items: { title: string; url: string; at: number
   );
 }
 
+function LocationCard() {
+  const { data } = useQuery(presenceQuery);
+  return (
+    <Card title="Where I am" icon={<MapPin size={13} />}>
+      {data ? (
+        <>
+          <div className="text-2xl font-semibold">{data.city}</div>
+          <div className="text-[11px] text-muted-foreground mt-1">
+            updated {timeAgo(Date.parse(data.updated_at))} · city-level only, never exact
+          </div>
+        </>
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          Location beacon is off right now — when it's on, my current city shows here live.
+        </p>
+      )}
+    </Card>
+  );
+}
+
 function GithubCard({ stats }: { stats: AllStats }) {
   const g = stats.github;
   return (

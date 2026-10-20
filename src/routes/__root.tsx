@@ -20,6 +20,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ThemeProvider } from "../lib/theme";
 import { AetherProvider } from "../lib/aether-state";
 import { AetherCore } from "../components/aether/AetherCore";
+import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
   return (
