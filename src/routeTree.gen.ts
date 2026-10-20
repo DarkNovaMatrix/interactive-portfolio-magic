@@ -10,16 +10,23 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AetherRouteImport } from './routes/aether'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CosmosRouteImport } from './routes/cosmos'
 import { Route as LinksRouteImport } from './routes/links'
 import { Route as NowRouteImport } from './routes/now'
 import { Route as ProjectsRouteImport } from './routes/projects'
+import { Route as AuthenticatedNowShareRouteImport } from './routes/_authenticated/now-share'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -30,6 +37,11 @@ const AboutRoute = AboutRouteImport.update({
 const AetherRoute = AetherRouteImport.update({
   id: '/aether',
   path: '/aether',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CosmosRoute = CosmosRouteImport.update({
@@ -52,56 +64,90 @@ const ProjectsRoute = ProjectsRouteImport.update({
   path: '/projects',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedNowShareRoute = AuthenticatedNowShareRouteImport.update({
+  id: '/now-share',
+  path: '/now-share',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/aether': typeof AetherRoute
+  '/auth': typeof AuthRoute
   '/cosmos': typeof CosmosRoute
   '/links': typeof LinksRoute
   '/now': typeof NowRoute
   '/projects': typeof ProjectsRoute
+  '/now-share': typeof AuthenticatedNowShareRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/aether': typeof AetherRoute
+  '/auth': typeof AuthRoute
   '/cosmos': typeof CosmosRoute
   '/links': typeof LinksRoute
   '/now': typeof NowRoute
   '/projects': typeof ProjectsRoute
+  '/now-share': typeof AuthenticatedNowShareRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/aether': typeof AetherRoute
+  '/auth': typeof AuthRoute
   '/cosmos': typeof CosmosRoute
   '/links': typeof LinksRoute
   '/now': typeof NowRoute
   '/projects': typeof ProjectsRoute
+  '/_authenticated/now-share': typeof AuthenticatedNowShareRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/about' | '/aether' | '/cosmos' | '/links' | '/now' | '/projects'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/aether' | '/cosmos' | '/links' | '/now' | '/projects'
-  id:
-    | '__root__'
     | '/'
     | '/about'
     | '/aether'
+    | '/auth'
     | '/cosmos'
     | '/links'
     | '/now'
     | '/projects'
+    | '/now-share'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/about'
+    | '/aether'
+    | '/auth'
+    | '/cosmos'
+    | '/links'
+    | '/now'
+    | '/projects'
+    | '/now-share'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/about'
+    | '/aether'
+    | '/auth'
+    | '/cosmos'
+    | '/links'
+    | '/now'
+    | '/projects'
+    | '/_authenticated/now-share'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   AetherRoute: typeof AetherRoute
+  AuthRoute: typeof AuthRoute
   CosmosRoute: typeof CosmosRoute
   LinksRoute: typeof LinksRoute
   NowRoute: typeof NowRoute
@@ -117,6 +163,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -129,6 +182,13 @@ declare module '@tanstack/react-router' {
       path: '/aether'
       fullPath: '/aether'
       preLoaderRoute: typeof AetherRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cosmos': {
@@ -159,13 +219,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/now-share': {
+      id: '/_authenticated/now-share'
+      path: '/now-share'
+      fullPath: '/now-share'
+      preLoaderRoute: typeof AuthenticatedNowShareRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedNowShareRoute: typeof AuthenticatedNowShareRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedNowShareRoute: AuthenticatedNowShareRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   AetherRoute: AetherRoute,
+  AuthRoute: AuthRoute,
   CosmosRoute: CosmosRoute,
   LinksRoute: LinksRoute,
   NowRoute: NowRoute,

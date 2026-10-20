@@ -1,11 +1,27 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
+import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Activity, ExternalLink, GitBranch, Trophy, Code2, Flame, Globe } from "lucide-react";
+import { Activity, ExternalLink, GitBranch, Trophy, Code2, Flame, Globe, MapPin } from "lucide-react";
 import { codingStatsQueryKey, getCodingStats, type AllStats } from "@/lib/coding-stats.functions";
 import { SOCIALS } from "@/data/socials";
+import { supabase } from "@/integrations/supabase/client";
 import { SiteNav } from "@/components/portfolio/SiteNav";
 import { SiteFooter } from "@/components/portfolio/SiteFooter";
+
+const presenceQuery = queryOptions({
+  queryKey: ["presence"],
+  queryFn: async () => {
+    const { data } = await supabase
+      .from("presence")
+      .select("city, updated_at")
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    return data;
+  },
+  refetchInterval: 60_000,
+  staleTime: 30_000,
+});
 
 const statsQuery = queryOptions({
   queryKey: codingStatsQueryKey,
@@ -82,6 +98,7 @@ function NowPage() {
         </p>
 
         <div className="mt-10 grid gap-4 md:grid-cols-2">
+          <LocationCard />
           <GithubCard stats={stats} />
           <LeetCodeCard stats={stats} />
           <CodeforcesCard stats={stats} />
