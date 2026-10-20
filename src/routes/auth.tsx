@@ -24,7 +24,7 @@ export const Route = createFileRoute("/auth")({
 
 function safeRedirect(path: string | undefined): string {
   if (path && path.startsWith("/") && !path.startsWith("//")) return path;
-  return "/now/share";
+  return "/now-share";
 }
 
 function AuthPage() {

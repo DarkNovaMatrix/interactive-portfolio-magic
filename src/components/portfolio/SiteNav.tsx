@@ -24,7 +24,7 @@ function AuthLink() {
 
   return signedIn ? (
     <span className="flex items-center gap-3">
-      <Link to="/now/share" className="hover-underline" title="Location beacon control">
+      <Link to="/now-share" className="hover-underline" title="Location beacon control">
         Beacon
       </Link>
       <button onClick={signOut} className="hover-underline uppercase tracking-widest text-xs">
