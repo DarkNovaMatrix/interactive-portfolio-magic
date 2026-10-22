@@ -15,6 +15,13 @@
       "when": 1792660729596,
       "tag": "0001_linkedin_connection_storage",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792661004317,
+      "tag": "0002_linkedin_public_profile_snapshot",
+      "breakpoints": true
     }
   ]
 }

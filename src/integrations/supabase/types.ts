@@ -41,6 +41,30 @@ export type Database = {
         }
         Relationships: []
       }
+      linkedin_profile_snapshots: {
+        Row: {
+          display_name: string
+          picture_url: string | null
+          published: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          display_name: string
+          picture_url?: string | null
+          published?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          display_name?: string
+          picture_url?: string | null
+          published?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       presence: {
         Row: {
           city: string
