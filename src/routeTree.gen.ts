@@ -19,6 +19,7 @@ import { Route as LinksRouteImport } from './routes/links'
 import { Route as NowRouteImport } from './routes/now'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as AuthenticatedNowShareRouteImport } from './routes/_authenticated/now-share'
+import { Route as ApiOauthLinkedinReturnRouteImport } from './routes/api/oauth/linkedin/return'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -69,6 +70,11 @@ const AuthenticatedNowShareRoute = AuthenticatedNowShareRouteImport.update({
   path: '/now-share',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiOauthLinkedinReturnRoute = ApiOauthLinkedinReturnRouteImport.update({
+  id: '/api/oauth/linkedin/return',
+  path: '/api/oauth/linkedin/return',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/now': typeof NowRoute
   '/projects': typeof ProjectsRoute
   '/now-share': typeof AuthenticatedNowShareRoute
+  '/api/oauth/linkedin/return': typeof ApiOauthLinkedinReturnRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -91,6 +98,7 @@ export interface FileRoutesByTo {
   '/now': typeof NowRoute
   '/projects': typeof ProjectsRoute
   '/now-share': typeof AuthenticatedNowShareRoute
+  '/api/oauth/linkedin/return': typeof ApiOauthLinkedinReturnRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -104,6 +112,7 @@ export interface FileRoutesById {
   '/now': typeof NowRoute
   '/projects': typeof ProjectsRoute
   '/_authenticated/now-share': typeof AuthenticatedNowShareRoute
+  '/api/oauth/linkedin/return': typeof ApiOauthLinkedinReturnRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/now'
     | '/projects'
     | '/now-share'
+    | '/api/oauth/linkedin/return'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/now'
     | '/projects'
     | '/now-share'
+    | '/api/oauth/linkedin/return'
   id:
     | '__root__'
     | '/'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/now'
     | '/projects'
     | '/_authenticated/now-share'
+    | '/api/oauth/linkedin/return'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -152,6 +164,7 @@ export interface RootRouteChildren {
   LinksRoute: typeof LinksRoute
   NowRoute: typeof NowRoute
   ProjectsRoute: typeof ProjectsRoute
+  ApiOauthLinkedinReturnRoute: typeof ApiOauthLinkedinReturnRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -226,6 +239,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNowShareRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/oauth/linkedin/return': {
+      id: '/api/oauth/linkedin/return'
+      path: '/api/oauth/linkedin/return'
+      fullPath: '/api/oauth/linkedin/return'
+      preLoaderRoute: typeof ApiOauthLinkedinReturnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -250,6 +270,7 @@ const rootRouteChildren: RootRouteChildren = {
   LinksRoute: LinksRoute,
   NowRoute: NowRoute,
   ProjectsRoute: ProjectsRoute,
+  ApiOauthLinkedinReturnRoute: ApiOauthLinkedinReturnRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
