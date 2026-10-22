@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep per-user OAuth credentials encrypted in server-only storage and access them only through authenticated server functions, because provider credentials must never reach browser code.
