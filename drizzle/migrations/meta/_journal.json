@@ -8,6 +8,13 @@
       "when": 1792491704898,
       "tag": "0000_presence_and_owner_role",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792660729596,
+      "tag": "0001_linkedin_connection_storage",
+      "breakpoints": true
     }
   ]
 }
