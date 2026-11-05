@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
+import { Menu, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { SOCIALS } from "@/data/socials";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "./ThemeToggle";
@@ -54,14 +56,28 @@ export function SiteNav() {
   const escort = useAetherEscort();
   const top4 = SOCIALS.filter(s => ["GitHub","LinkedIn","Twitter / X","Instagram"].includes(s.name));
 
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [open]);
+
   return (
-    <header className="fixed top-0 inset-x-0 z-50 mix-blend-difference">
-      <div className="flex items-center justify-between px-6 md:px-10 py-5 text-white">
-        <Link to="/" className="serif text-2xl leading-none" onClick={(e) => escort("/", e)}>
+    <header className="fixed top-0 inset-x-0 z-[60] border-b border-border bg-background/90 text-foreground backdrop-blur-md">
+      <div className="relative z-50 flex items-center justify-between px-6 md:px-10 py-4">
+        <Link to="/" className="serif text-2xl leading-none" onClick={(e) => { setOpen(false); escort("/", e); }}>
           Amish<span className="text-accent">.</span>
         </Link>
 
-        <nav className="hidden md:flex gap-8 text-xs uppercase tracking-widest items-center">
+        <nav className="hidden xl:flex gap-5 text-[11px] uppercase tracking-widest items-center">
           {LINKS.map(([l, h]) => (
             <Link
               key={h}
@@ -74,44 +90,61 @@ export function SiteNav() {
               {l}
             </Link>
           ))}
-          <span className="h-4 w-px bg-white/40" />
-          {top4.map((s) => (
-            <a key={s.name} href={s.url} target="_blank" rel="noreferrer" className="hover-underline" title={s.handle}>
-              {s.name.split(" ")[0]}
-            </a>
-          ))}
+          <span className="h-4 w-px bg-border" />
           <AuthLink />
           <ThemeToggle />
 
         </nav>
 
-        <button
-          onClick={() => setOpen((v) => !v)}
-          className="md:hidden text-xs uppercase tracking-widest"
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setOpen((value) => !value)}
+          className="xl:hidden relative z-50"
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+          aria-controls="site-menu-overlay"
         >
-          {open ? "Close" : "Menu"}
-        </button>
+          {open ? <X /> : <Menu />}
+        </Button>
       </div>
 
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ height: 0 }}
-            animate={{ height: "auto" }}
-            exit={{ height: 0 }}
-            className="md:hidden overflow-hidden bg-ink text-paper"
+            id="site-menu-overlay"
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className="fixed inset-0 z-40 overflow-y-auto bg-background text-foreground xl:hidden"
           >
-            <div className="flex flex-col gap-3 px-6 py-6 serif text-3xl">
-              {LINKS.map(([l, h]) => (
-                <Link key={h} to={h} onClick={(e) => { setOpen(false); escort(h, e); }}>{l}</Link>
-              ))}
-            </div>
-            <div className="grid grid-cols-2 gap-2 px-6 pb-6 text-sm">
-              {top4.map((s) => (
-                <a key={s.name} href={s.url} target="_blank" rel="noreferrer" className="border border-paper/20 px-3 py-2">
-                  {s.name} ↗
-                </a>
-              ))}
+            <div className="mx-auto flex min-h-full max-w-6xl flex-col px-6 pb-10 pt-24 md:px-10">
+              <div className="eyebrow text-muted-foreground">Amish Kumar · Index</div>
+              <nav aria-label="Main navigation" className="mt-5 grid grid-cols-1 gap-x-12 border-t border-border sm:grid-cols-2">
+                {LINKS.map(([label, href], index) => (
+                  <Link
+                    key={href}
+                    to={href}
+                    onClick={(event) => { setOpen(false); escort(href, event); }}
+                    className="group flex items-center justify-between border-b border-border py-4 serif text-3xl transition-colors hover:text-accent md:py-5 md:text-4xl"
+                  >
+                    <span>{label}</span>
+                    <span className="eyebrow text-muted-foreground">0{index + 1}</span>
+                  </Link>
+                ))}
+              </nav>
+              <div className="mt-auto grid grid-cols-2 gap-x-6 gap-y-3 border-t border-border pt-6 sm:grid-cols-4">
+                {top4.map((social) => (
+                  <a key={social.name} href={social.url} target="_blank" rel="noreferrer" className="hover-underline text-sm">
+                    {social.name} ↗
+                  </a>
+                ))}
+                <div className="col-span-2 flex items-center justify-between sm:col-span-4">
+                  <AuthLink />
+                  <ThemeToggle />
+                </div>
+              </div>
             </div>
           </motion.div>
         )}

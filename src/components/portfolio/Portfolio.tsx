@@ -186,12 +186,12 @@ function Hero() {
 
       <motion.div style={{ y, opacity }} className="relative">
         <div className="flex items-baseline gap-4 mb-8">
-          <span className="eyebrow text-muted-foreground">№ 001 — Portfolio, 2026 Edition</span>
+          <span className="eyebrow text-muted-foreground">Amish Kumar · AI, product & systems</span>
           <span className="flex-1 h-px bg-rule" />
           <span className="eyebrow text-muted-foreground hidden md:inline">Ramapuram · IN</span>
         </div>
 
-        <h1 className="serif leading-[0.9] tracking-tight text-[15vw] md:text-[11vw]">
+        <h1 className="serif leading-[0.92] tracking-tight text-5xl sm:text-7xl md:text-8xl xl:text-9xl">
           <span className="block">
             <ItalicWord>Amish</ItalicWord> Kumar
           </span>
@@ -219,6 +219,11 @@ function Hero() {
               <span className="text-sm">Building <em className="italic serif">Dravik</em></span>
             </div>
           </div>
+        </div>
+
+        <div className="mt-8 flex flex-wrap gap-6 text-sm">
+          <a href="#work" className="hover-underline">Selected work ↓</a>
+          <a href="/about" className="hover-underline">Full profile ↗</a>
         </div>
       </motion.div>
 

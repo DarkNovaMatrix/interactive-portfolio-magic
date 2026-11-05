@@ -29,6 +29,7 @@ export type GithubStats = {
   following: number;
   url: string;
   topRepos: Repo[];
+  recentRepos: Repo[];
   events: GithubEvent[];
   lastActiveAt: string | null;
   authenticated: boolean;
@@ -124,19 +125,24 @@ async function fetchGithub(user: string, token?: string): Promise<GithubStats> {
     repoUrl: `https://github.com/${e.repo?.name ?? ""}`,
     at: e.created_at,
   }));
-  const topRepos: Repo[] = repos
-    .filter((r) => !r.fork)
+  const ownedRepos = repos.filter((r) => !r.fork);
+  const toRepo = (r: any): Repo => ({
+    name: r.name,
+    description: r.description,
+    stars: r.stargazers_count,
+    forks: r.forks_count,
+    url: r.html_url,
+    language: r.language,
+    updatedAt: r.updated_at,
+  });
+  const topRepos: Repo[] = [...ownedRepos]
     .sort((a, b) => (b.stargazers_count - a.stargazers_count) || (Date.parse(b.updated_at) - Date.parse(a.updated_at)))
     .slice(0, 6)
-    .map((r) => ({
-      name: r.name,
-      description: r.description,
-      stars: r.stargazers_count,
-      forks: r.forks_count,
-      url: r.html_url,
-      language: r.language,
-      updatedAt: r.updated_at,
-    }));
+    .map(toRepo);
+  const recentRepos: Repo[] = [...ownedRepos]
+    .sort((a, b) => Date.parse(b.updated_at) - Date.parse(a.updated_at))
+    .slice(0, 12)
+    .map(toRepo);
   return {
     username: u.login,
     name: u.name,
@@ -147,6 +153,7 @@ async function fetchGithub(user: string, token?: string): Promise<GithubStats> {
     following: u.following,
     url: u.html_url,
     topRepos,
+    recentRepos,
     events,
     lastActiveAt: events[0]?.at ?? null,
     authenticated: Boolean(token),
