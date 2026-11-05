@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { MapPin, LogOut, Satellite } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteNav } from "@/components/portfolio/SiteNav";
+import { LinkedInProfileSync } from "@/components/portfolio/LinkedInProfileSync";
 
 export const Route = createFileRoute("/_authenticated/now-share")({
   head: () => ({
@@ -163,6 +164,10 @@ function NowSharePage() {
             >
               <LogOut size={15} />
             </button>
+          </div>
+
+          <div className="mt-10 w-full max-w-4xl">
+            <LinkedInProfileSync />
           </div>
         </motion.div>
       </main>
