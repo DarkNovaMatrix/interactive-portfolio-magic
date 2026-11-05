@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Activity, ExternalLink, GitBranch, Trophy, Code2, Flame, Globe, MapPin } from "lucide-react";
+import { Activity, ExternalLink, GitBranch, Trophy, Code2, Flame, Globe, MapPin, Linkedin } from "lucide-react";
 import { codingStatsQueryKey, getCodingStats, type AllStats } from "@/lib/coding-stats.functions";
 import { SOCIALS } from "@/data/socials";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,10 +23,24 @@ const presenceQuery = queryOptions({
   staleTime: 30_000,
 });
 
+const linkedinProfileQuery = queryOptions({
+  queryKey: ["linkedin-public-profile"],
+  queryFn: async () => {
+    const { data } = await supabase
+      .from("linkedin_profile_snapshots")
+      .select("display_name, picture_url, updated_at")
+      .eq("published", true)
+      .maybeSingle();
+    return data;
+  },
+  staleTime: 60_000,
+});
+
 const statsQuery = queryOptions({
   queryKey: codingStatsQueryKey,
   queryFn: () => getCodingStats({ data: {} }),
   staleTime: 60_000,
+  refetchInterval: 5 * 60 * 1000,
 });
 
 export const Route = createFileRoute("/now")({
@@ -62,6 +76,7 @@ function timeAgo(ts: number | string | null | undefined): string {
 
 function NowPage() {
   const { data } = useSuspenseQuery(statsQuery);
+  const { data: linkedinProfile } = useQuery(linkedinProfileQuery);
   const stats = data as AllStats;
 
   const lastActivity = Math.max(
@@ -104,8 +119,37 @@ function NowPage() {
           <CodeforcesCard stats={stats} />
           <CodeChefCard stats={stats} />
           <GfgCard stats={stats} />
-          <ProfileLinksCard />
+          <ProfileLinksCard linkedinProfile={linkedinProfile} />
         </div>
+
+        <section className="mt-12 border-t border-border pt-8">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <div className="eyebrow text-muted-foreground">Public project feed</div>
+              <h2 className="serif mt-2 text-3xl">Latest repositories</h2>
+            </div>
+            <a href={`https://github.com/${stats.github?.username ?? "Zero-Day-Smile"}`} target="_blank" rel="noreferrer" className="text-sm hover:text-accent">
+              Open GitHub ↗
+            </a>
+          </div>
+          {stats.github?.recentRepos.length ? (
+            <ul className="mt-5 grid gap-x-8 md:grid-cols-2">
+              {stats.github.recentRepos.slice(0, 6).map((repo) => (
+                <li key={repo.url} className="border-t border-border">
+                  <a href={repo.url} target="_blank" rel="noreferrer" className="group block py-4">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <span className="serif text-xl group-hover:text-accent transition-colors">{repo.name}</span>
+                      <span className="text-[11px] text-muted-foreground">{timeAgo(repo.updatedAt)}</span>
+                    </div>
+                    <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{repo.description || "Public GitHub repository"}</p>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-5 text-sm text-muted-foreground">Public repositories are temporarily unavailable.</p>
+          )}
+        </section>
 
         <div className="mt-8 text-[11px] uppercase tracking-widest text-muted-foreground">
           fetched {timeAgo(stats.fetchedAt)} · cached 5 min
@@ -303,10 +347,19 @@ function GfgCard({ stats }: { stats: AllStats }) {
   );
 }
 
-function ProfileLinksCard() {
-  const links = SOCIALS.filter((s) => ["LinkedIn", "HackerRank", "Code360"].includes(s.name));
+function ProfileLinksCard({ linkedinProfile }: { linkedinProfile: { display_name: string; picture_url: string | null; updated_at: string } | null | undefined }) {
+  const links = SOCIALS.filter((s) => ["LinkedIn", "Codolio", "HackerRank", "Code360"].includes(s.name));
   return (
     <Card title="More profiles" icon={<Globe size={13} />} delay={0.25}>
+      {linkedinProfile && (
+        <div className="mb-3 flex items-center gap-3 border-b border-border pb-3">
+          {linkedinProfile.picture_url && <img src={linkedinProfile.picture_url} alt="" className="h-10 w-10 rounded-full border border-border object-cover" />}
+          <div>
+            <div className="text-sm font-medium">{linkedinProfile.display_name}</div>
+            <div className="text-[11px] text-muted-foreground">LinkedIn · updated {timeAgo(Date.parse(linkedinProfile.updated_at))}</div>
+          </div>
+        </div>
+      )}
       <div className="space-y-2">
         {links.map((s) => (
           <a
