@@ -9,7 +9,6 @@ export interface AppUserOAuthAuthorizeParams {
   connectorId: string;
   appUserId: string;
   clientAPIKey: string;
-  connectionAPIKey?: string;
   returnUrl: string;
   credentialsConfiguration?: Record<string, unknown>;
 }
@@ -19,7 +18,6 @@ export async function authorizeAppUserOAuth({
   connectorId,
   appUserId,
   clientAPIKey,
-  connectionAPIKey,
   returnUrl,
   credentialsConfiguration,
 }: AppUserOAuthAuthorizeParams): Promise<{ authorizationUrl: string }> {
@@ -28,8 +26,6 @@ export async function authorizeAppUserOAuth({
     "Content-Type": "application/json",
     "X-Client-Api-Key": clientAPIKey,
   };
-  if (connectionAPIKey) headers["X-Connection-Api-Key"] = connectionAPIKey;
-
   const response = await fetch(`${gatewayBaseUrl}/api/v1/app-users/oauth2/authorize`, {
     method: "POST",
     headers,

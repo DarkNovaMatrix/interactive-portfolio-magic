@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import { codingStatsQueryKey, getCodingStats, type AllStats } from "@/lib/coding-stats.functions";
 import { SiteNav } from "@/components/portfolio/SiteNav";
 import { SiteFooter } from "@/components/portfolio/SiteFooter";
 
@@ -11,10 +13,19 @@ export const Route = createFileRoute("/projects")({
       { property: "og:title", content: "Projects — Amish Kumar" },
       { property: "og:description", content: "AI travel, emergency response AI, medical triage, and productivity tools." },
       { property: "og:url", content: "/projects" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
     links: [{ rel: "canonical", href: "/projects" }],
   }),
+  loader: ({ context }) => context.queryClient.ensureQueryData(projectsStatsQuery),
   component: ProjectsPage,
+});
+
+const projectsStatsQuery = queryOptions({
+  queryKey: codingStatsQueryKey,
+  queryFn: (): Promise<AllStats> => getCodingStats({ data: {} }),
+  staleTime: 5 * 60 * 1000,
 });
 
 const PROJECTS = [
@@ -92,6 +103,7 @@ const PROJECTS = [
 ];
 
 function ProjectsPage() {
+  const { data } = useSuspenseQuery(projectsStatsQuery);
   return (
     <div className="min-h-screen bg-paper text-ink">
       <SiteNav />
@@ -151,6 +163,41 @@ function ProjectsPage() {
             </motion.article>
           ))}
         </div>
+
+        <section className="max-w-6xl mx-auto mt-28 border-t border-ink pt-10">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <div className="eyebrow text-muted-foreground">Live from GitHub</div>
+              <h2 className="serif mt-3 text-4xl md:text-5xl">Recently updated repositories.</h2>
+            </div>
+            <a href={`https://github.com/${data.github?.username ?? "Zero-Day-Smile"}`} target="_blank" rel="noreferrer" className="hover-underline text-sm">
+              All repositories ↗
+            </a>
+          </div>
+          {data.github?.recentRepos.length ? (
+            <ul className="mt-8 grid gap-x-10 md:grid-cols-2">
+              {data.github.recentRepos.map((repo, index) => (
+                <li key={repo.url} className="border-t border-border">
+                  <a href={repo.url} target="_blank" rel="noreferrer" className="group block py-5">
+                    <div className="flex flex-wrap items-baseline justify-between gap-2">
+                      <span className="serif text-2xl group-hover:text-accent transition-colors">{repo.name}</span>
+                      <span className="eyebrow text-muted-foreground">{index + 1} · {new Date(repo.updatedAt).toLocaleDateString()}</span>
+                    </div>
+                    <p className="mt-2 text-sm leading-relaxed text-ink-soft">{repo.description || "Public repository"}</p>
+                    <div className="mt-3 flex gap-4 text-xs text-muted-foreground">
+                      {repo.language && <span>{repo.language}</span>}
+                      <span>★ {repo.stars}</span>
+                      <span>⑂ {repo.forks}</span>
+                    </div>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-8 border-t border-border py-5 text-sm text-muted-foreground">Public repository data is temporarily unavailable.</p>
+          )}
+          <p className="mt-4 text-xs text-muted-foreground">Repository names, descriptions, and links are read from the public GitHub profile when this page refreshes.</p>
+        </section>
 
         <div className="max-w-6xl mx-auto mt-32 border-t border-ink pt-10 flex flex-wrap items-baseline justify-between gap-6">
           <div className="serif text-4xl md:text-5xl">Curious what's next?</div>
