@@ -14,6 +14,7 @@ export const HANDLES = {
   hackerrank: "ZeroDaySmile",
   code360: "ZeroDaySmile",
   linkedin: "amishkumarofficial",
+  codolio: "Amish",
 } as const;
 
 export const SOCIALS: Social[] = [
@@ -26,6 +27,7 @@ export const SOCIALS: Social[] = [
   { name: "Code360",    handle: "ZeroDaySmile",    url: `https://www.naukri.com/code360/profile/${HANDLES.code360}`,         category: "code" },
 
   { name: "LinkedIn",   handle: "Amish Kumar",     url: `https://www.linkedin.com/in/${HANDLES.linkedin}`,                   category: "professional" },
+  { name: "Codolio",    handle: `@${HANDLES.codolio}`, url: `https://codolio.com/profile/${HANDLES.codolio}`,                   category: "code" },
 
   { name: "Email",      handle: "hello@amishkumar.dev", url: "mailto:hello@amishkumar.dev",                                  category: "contact" },
 ];
