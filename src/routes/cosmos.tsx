@@ -16,6 +16,8 @@ export const Route = createFileRoute("/cosmos")({
       { name: "description", content: "Pilot a rocket through a real-scale universe. Land on planets tagged with Amish's projects, then zoom out through the galaxy to the cosmic web." },
       { property: "og:title", content: "Cosmos — drivable universe" },
       { property: "og:description", content: "WASD + mouse. Land on project-planets. Zoom out until you see the cosmic web." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: CosmosPage,

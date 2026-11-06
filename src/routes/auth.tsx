@@ -15,6 +15,7 @@ export const Route = createFileRoute("/auth")({
       { title: "Sign in — Amish Kumar" },
       { name: "description", content: "Owner sign-in for Amish Kumar's portfolio." },
       { property: "og:title", content: "Sign in — Amish Kumar" },
+      { property: "og:description", content: "Private owner access for Amish Kumar's portfolio controls." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
