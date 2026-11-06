@@ -120,6 +120,9 @@ export function SiteNav() {
           exit={{ opacity: 0, y: -12 }}
           transition={{ duration: 0.18, ease: "easeOut" }}
           className="fixed inset-0 z-50 overflow-y-auto bg-background text-foreground xl:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Site navigation"
         >
           <div className="mx-auto flex min-h-full max-w-6xl flex-col px-6 pb-10 pt-24 md:px-10">
             <div className="eyebrow text-muted-foreground">Amish Kumar · Index</div>
