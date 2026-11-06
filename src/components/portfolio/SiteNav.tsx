@@ -71,6 +71,7 @@ export function SiteNav() {
   }, [open]);
 
   return (
+    <>
     <header className="fixed top-0 inset-x-0 z-[60] border-b border-border bg-background/90 text-foreground backdrop-blur-md">
       <div className="relative z-50 flex items-center justify-between px-6 md:px-10 py-4">
         <Link to="/" className="serif text-2xl leading-none" onClick={(e) => { setOpen(false); escort("/", e); }}>
@@ -109,46 +110,47 @@ export function SiteNav() {
         </Button>
       </div>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            id="site-menu-overlay"
-            initial={{ opacity: 0, y: -12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.18, ease: "easeOut" }}
-            className="fixed inset-0 z-40 overflow-y-auto bg-background text-foreground xl:hidden"
-          >
-            <div className="mx-auto flex min-h-full max-w-6xl flex-col px-6 pb-10 pt-24 md:px-10">
-              <div className="eyebrow text-muted-foreground">Amish Kumar · Index</div>
-              <nav aria-label="Main navigation" className="mt-5 grid grid-cols-1 gap-x-12 border-t border-border sm:grid-cols-2">
-                {LINKS.map(([label, href], index) => (
-                  <Link
-                    key={href}
-                    to={href}
-                    onClick={(event) => { setOpen(false); escort(href, event); }}
-                    className="group flex items-center justify-between border-b border-border py-4 serif text-3xl transition-colors hover:text-accent md:py-5 md:text-4xl"
-                  >
-                    <span>{label}</span>
-                    <span className="eyebrow text-muted-foreground">0{index + 1}</span>
-                  </Link>
-                ))}
-              </nav>
-              <div className="mt-auto grid grid-cols-2 gap-x-6 gap-y-3 border-t border-border pt-6 sm:grid-cols-4">
-                {top4.map((social) => (
-                  <a key={social.name} href={social.url} target="_blank" rel="noreferrer" className="hover-underline text-sm">
-                    {social.name} ↗
-                  </a>
-                ))}
-                <div className="col-span-2 flex items-center justify-between sm:col-span-4">
-                  <AuthLink />
-                  <ThemeToggle />
-                </div>
+    </header>
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          id="site-menu-overlay"
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -12 }}
+          transition={{ duration: 0.18, ease: "easeOut" }}
+          className="fixed inset-0 z-50 overflow-y-auto bg-background text-foreground xl:hidden"
+        >
+          <div className="mx-auto flex min-h-full max-w-6xl flex-col px-6 pb-10 pt-24 md:px-10">
+            <div className="eyebrow text-muted-foreground">Amish Kumar · Index</div>
+            <nav aria-label="Main navigation" className="mt-5 grid grid-cols-1 gap-x-12 border-t border-border sm:grid-cols-2">
+              {LINKS.map(([label, href], index) => (
+                <Link
+                  key={href}
+                  to={href}
+                  onClick={(event) => { setOpen(false); escort(href, event); }}
+                  className="group flex items-center justify-between border-b border-border py-4 serif text-3xl transition-colors hover:text-accent md:py-5 md:text-4xl"
+                >
+                  <span>{label}</span>
+                  <span className="eyebrow text-muted-foreground">0{index + 1}</span>
+                </Link>
+              ))}
+            </nav>
+            <div className="mt-auto grid grid-cols-2 gap-x-6 gap-y-3 border-t border-border pt-6 sm:grid-cols-4">
+              {top4.map((social) => (
+                <a key={social.name} href={social.url} target="_blank" rel="noreferrer" className="hover-underline text-sm">
+                  {social.name} ↗
+                </a>
+              ))}
+              <div className="col-span-2 flex items-center justify-between sm:col-span-4">
+                <AuthLink />
+                <ThemeToggle />
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </header>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+    </>
   );
 }
