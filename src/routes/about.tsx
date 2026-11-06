@@ -17,6 +17,8 @@ export const Route = createFileRoute("/about")({
       { property: "og:title", content: "About — Amish Kumar" },
       { property: "og:description", content: "Dossier, live coding stats, and the long game." },
       { property: "og:url", content: "/about" },
+      { property: "og:type", content: "profile" },
+      { name: "twitter:card", content: "summary" },
     ],
     links: [{ rel: "canonical", href: "/about" }],
   }),

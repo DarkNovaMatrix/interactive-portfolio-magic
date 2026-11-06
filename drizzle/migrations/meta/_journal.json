@@ -22,6 +22,13 @@
       "when": 1792661004317,
       "tag": "0002_linkedin_public_profile_snapshot",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793975812452,
+      "tag": "0003_publish_linkedin_identity_fields",
+      "breakpoints": true
     }
   ]
 }

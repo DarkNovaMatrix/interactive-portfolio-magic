@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Activity, ExternalLink, GitBranch, Trophy, Code2, Flame, Globe, MapPin, Linkedin } from "lucide-react";
+import { Activity, ExternalLink, GitBranch, Trophy, Code2, Flame, Globe, MapPin } from "lucide-react";
 import { codingStatsQueryKey, getCodingStats, type AllStats } from "@/lib/coding-stats.functions";
 import { SOCIALS } from "@/data/socials";
 import { supabase } from "@/integrations/supabase/client";
@@ -108,8 +108,8 @@ function NowPage() {
         </header>
 
         <p className="mt-4 text-sm text-muted-foreground max-w-xl">
-          Pulled live from my public profiles, refreshed every few minutes. LinkedIn and Instagram don't
-          offer public live data, so those are links — everything else below is real activity.
+          Coding activity refreshes from public profile feeds. LinkedIn shares only the identity you approve;
+          Codolio links to its profile because it does not publish an automatic stats feed.
         </p>
 
         <div className="mt-10 grid gap-4 md:grid-cols-2">
@@ -375,7 +375,7 @@ function ProfileLinksCard({ linkedinProfile }: { linkedinProfile: { display_name
         ))}
       </div>
       <p className="mt-3 text-[11px] text-muted-foreground">
-        These platforms don't expose public live feeds — links only.
+        Codolio is linked as a profile. LinkedIn identity appears after the owner connects it.
       </p>
       <Link to="/links" className="mt-3 inline-block text-[11px] uppercase tracking-widest text-accent hover:underline">
         all links →

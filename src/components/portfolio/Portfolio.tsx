@@ -186,7 +186,7 @@ function Hero() {
 
       <motion.div style={{ y, opacity }} className="relative">
         <div className="flex items-baseline gap-4 mb-8">
-          <span className="eyebrow text-muted-foreground">Amish Kumar · AI, product & systems</span>
+          <span className="eyebrow text-muted-foreground">Amish Kumar · intelligent systems, built with intent</span>
           <span className="flex-1 h-px bg-rule" />
           <span className="eyebrow text-muted-foreground hidden md:inline">Ramapuram · IN</span>
         </div>

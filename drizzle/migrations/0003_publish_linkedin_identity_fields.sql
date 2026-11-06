@@ -1,0 +1,1 @@
+GRANT SELECT (display_name, picture_url, published, updated_at) ON public.linkedin_profile_snapshots TO anon;

@@ -105,7 +105,7 @@ function NowSharePage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SiteNav />
-      <main className="flex min-h-screen items-center justify-center px-6">
+      <main className="mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center gap-12 px-6 py-32">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -166,10 +166,10 @@ function NowSharePage() {
             </button>
           </div>
 
-          <div className="mt-10 w-full max-w-4xl">
-            <LinkedInProfileSync />
-          </div>
         </motion.div>
+        <div className="w-full max-w-4xl">
+          <LinkedInProfileSync />
+        </div>
       </main>
     </div>
   );

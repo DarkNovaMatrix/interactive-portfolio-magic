@@ -8,10 +8,12 @@ export const Route = createFileRoute("/links")({
   head: () => ({
     meta: [
       { title: "Links — Amish Kumar" },
-      { name: "description", content: "GitHub, LeetCode, LinkedIn, Twitter, Instagram — every place to find Amish Kumar online." },
+      { name: "description", content: "GitHub, LeetCode, Codolio, LinkedIn, and other profiles connected to Amish Kumar's work." },
       { property: "og:title", content: "Links — Amish Kumar" },
       { property: "og:description", content: "All my profiles: code, professional, social." },
       { property: "og:url", content: "/links" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
     links: [{ rel: "canonical", href: "/links" }],
   }),

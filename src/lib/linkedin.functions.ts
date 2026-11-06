@@ -2,8 +2,6 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { appUserReconnectRequired, authorizeAppUserOAuth, callAsAppUser, exchangeAppUserOAuthCode } from "@/integrations/lovable/appUserConnector";
-import { getConnectionKeyForUser, saveConnectionKeyForUser } from "@/server/appUserConnections.server";
 
 const CONNECTOR_ID = "linkedin";
 const GATEWAY_BASE_URL = "https://connector-gateway.lovable.dev";
@@ -22,14 +20,17 @@ export const startLinkedInConnect = createServerFn({ method: "POST" })
     if (!clientAPIKey) throw new Error("LinkedIn connection is not configured yet.");
     const request = getRequest();
     if (!request) throw new Error("Open LinkedIn connection from the portfolio.");
-    const returnUrl = new URL("/api/oauth/linkedin/return", new URL(request.url).origin).toString();
+    const requestUrl = new URL(request.url);
+    const sandboxHost = requestUrl.hostname === "localhost" ? request.headers.get("x-forwarded-host") : null;
+    const returnUrl = new URL("/api/oauth/linkedin/return", sandboxHost ? `https://${sandboxHost}` : requestUrl.origin).toString();
+    const { getConnectionKeyForUser } = await import("@/server/appUserConnections.server");
+    const { authorizeAppUserOAuth } = await import("@/integrations/lovable/appUserConnector");
     const connectionAPIKey = await getConnectionKeyForUser(context.userId, CONNECTOR_ID);
     const { authorizationUrl } = await authorizeAppUserOAuth({
       gatewayBaseUrl: GATEWAY_BASE_URL,
       connectorId: CONNECTOR_ID,
       appUserId: context.userId,
       clientAPIKey,
-      connectionAPIKey: connectionAPIKey ?? undefined,
       returnUrl,
       credentialsConfiguration: { scopes: LINKEDIN_SCOPES },
     });
@@ -41,6 +42,8 @@ export const completeLinkedInConnect = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.string().trim().min(1).max(4096).parse(input))
   .handler(async ({ data: code, context }) => {
     await assertPortfolioOwner(context.supabase, context.userId);
+    const { exchangeAppUserOAuthCode } = await import("@/integrations/lovable/appUserConnector");
+    const { saveConnectionKeyForUser } = await import("@/server/appUserConnections.server");
     const result = await exchangeAppUserOAuthCode(GATEWAY_BASE_URL, code);
     if (result.connectorId !== CONNECTOR_ID) throw new Error("LinkedIn returned an unexpected connection.");
     await saveConnectionKeyForUser(context.userId, result.connectorId, result.connectionAPIKey);
@@ -51,6 +54,7 @@ export const getLinkedInConnectionStatus = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertPortfolioOwner(context.supabase, context.userId);
+    const { getConnectionKeyForUser } = await import("@/server/appUserConnections.server");
     const connectionAPIKey = await getConnectionKeyForUser(context.userId, CONNECTOR_ID);
     return { connected: Boolean(connectionAPIKey) };
   });
@@ -59,9 +63,11 @@ export const syncLinkedInProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertPortfolioOwner(context.supabase, context.userId);
+    const { getConnectionKeyForUser } = await import("@/server/appUserConnections.server");
     const connectionAPIKey = await getConnectionKeyForUser(context.userId, CONNECTOR_ID);
     if (!connectionAPIKey) return { connected: false as const, updated: false as const };
 
+    const { appUserReconnectRequired, callAsAppUser } = await import("@/integrations/lovable/appUserConnector");
     const response = await callAsAppUser({
       gatewayBaseUrl: GATEWAY_BASE_URL,
       connectionAPIKey,

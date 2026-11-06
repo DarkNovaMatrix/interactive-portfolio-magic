@@ -87,11 +87,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Amish Kumar — Builder, CS Student & Founder-in-Progress" },
+      { title: "Amish Kumar — AI, Product & Systems Engineering" },
       {
         name: "description",
         content:
-          "Portfolio of Amish Kumar — CS student at SRM building AI-first products like Dravik, Nirbhay AI, and SmartAid. Software, design, and ambitious ideas.",
+          "Amish Kumar studies computer science at SRM and builds AI-first products for travel, healthcare, and emergency response.",
       },
       { name: "author", content: "Amish Kumar" },
       { property: "og:title", content: "Amish Kumar — Builder & CS Student" },
