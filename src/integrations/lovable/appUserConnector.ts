@@ -38,7 +38,7 @@ export async function authorizeAppUserOAuth({
   });
   const text = await response.text();
   if (!response.ok) {
-    console.error(`LinkedIn connection start failed [${response.status}]: ${text}`);
+    console.error(`LinkedIn connection start failed [${response.status}]`);
     throw new Error("Could not start LinkedIn connection.");
   }
 
@@ -61,7 +61,7 @@ export async function exchangeAppUserOAuthCode(
   });
   const text = await response.text();
   if (!response.ok) {
-    console.error(`LinkedIn connection completion failed [${response.status}]: ${text}`);
+    console.error(`LinkedIn connection completion failed [${response.status}]`);
     throw new Error("Could not finish LinkedIn connection.");
   }
 
