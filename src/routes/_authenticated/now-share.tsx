@@ -12,6 +12,10 @@ export const Route = createFileRoute("/_authenticated/now-share")({
     meta: [
       { title: "Share my location — Amish Kumar" },
       { name: "description", content: "Owner-only control for the live city shown on the Now page." },
+      { property: "og:title", content: "Owner settings — Amish Kumar" },
+      { property: "og:description", content: "Private controls for location sharing and connected profile details." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),

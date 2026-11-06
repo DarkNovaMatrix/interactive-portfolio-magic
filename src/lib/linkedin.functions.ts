@@ -1,13 +1,15 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { Database } from "@/integrations/supabase/types";
 
 const CONNECTOR_ID = "linkedin";
 const GATEWAY_BASE_URL = "https://connector-gateway.lovable.dev";
 const LINKEDIN_SCOPES = ["openid", "profile"];
 
-async function assertPortfolioOwner(supabase: { rpc: (fn: "has_role", args: { _user_id: string; _role: "admin" }) => Promise<{ data: boolean | null; error: unknown }> }, userId: string) {
+async function assertPortfolioOwner(supabase: SupabaseClient<Database>, userId: string) {
   const { data, error } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
   if (error || !data) throw new Error("Owner access is required to manage profile connections.");
 }
