@@ -30,6 +30,8 @@ const linkedinProfileQuery = queryOptions({
       .from("linkedin_profile_snapshots")
       .select("display_name, picture_url, updated_at")
       .eq("published", true)
+      .order("updated_at", { ascending: false })
+      .limit(1)
       .maybeSingle();
     return data;
   },

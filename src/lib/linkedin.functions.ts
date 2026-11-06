@@ -25,9 +25,7 @@ export const startLinkedInConnect = createServerFn({ method: "POST" })
     const requestUrl = new URL(request.url);
     const sandboxHost = requestUrl.hostname === "localhost" ? request.headers.get("x-forwarded-host") : null;
     const returnUrl = new URL("/api/oauth/linkedin/return", sandboxHost ? `https://${sandboxHost}` : requestUrl.origin).toString();
-    const { getConnectionKeyForUser } = await import("@/server/appUserConnections.server");
     const { authorizeAppUserOAuth } = await import("@/integrations/lovable/appUserConnector");
-    const connectionAPIKey = await getConnectionKeyForUser(context.userId, CONNECTOR_ID);
     const { authorizationUrl } = await authorizeAppUserOAuth({
       gatewayBaseUrl: GATEWAY_BASE_URL,
       connectorId: CONNECTOR_ID,
