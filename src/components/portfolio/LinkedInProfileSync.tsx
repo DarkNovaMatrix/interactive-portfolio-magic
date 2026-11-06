@@ -45,6 +45,7 @@ export function LinkedInProfileSync() {
 
   useEffect(() => {
     let cancelled = false;
+    let refreshTimer: number | undefined;
     void getStatus()
       .then(async (result) => {
         if (cancelled) return;
@@ -62,6 +63,20 @@ export function LinkedInProfileSync() {
           } catch {
             if (!cancelled) setNotice("LinkedIn could not refresh this profile.");
           }
+          refreshTimer = window.setInterval(() => {
+            void syncProfile().then((latest) => {
+              if (cancelled) return;
+              if (latest.updated) setNotice(`LinkedIn profile refreshed as ${latest.displayName}.`);
+              else if ("error" in latest && latest.error) setNotice(latest.error);
+              else if ("reconnectRequired" in latest && latest.reconnectRequired) {
+                setStatus("disconnected");
+                setNotice("LinkedIn access needs to be renewed.");
+                if (refreshTimer !== undefined) window.clearInterval(refreshTimer);
+              }
+            }).catch(() => {
+              if (!cancelled) setNotice("LinkedIn could not refresh this profile.");
+            });
+          }, 5 * 60 * 1000);
         }
       })
       .catch(() => {
@@ -69,6 +84,7 @@ export function LinkedInProfileSync() {
       });
     return () => {
       cancelled = true;
+      if (refreshTimer !== undefined) window.clearInterval(refreshTimer);
     };
   }, [getStatus, syncProfile]);
 
