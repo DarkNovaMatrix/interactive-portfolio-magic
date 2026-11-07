@@ -8,7 +8,11 @@ export const Route = createFileRoute("/links")({
   head: () => ({
     meta: [
       { title: "Links — Amish Kumar" },
-      { name: "description", content: "GitHub, LeetCode, Codolio, LinkedIn, and other profiles connected to Amish Kumar's work." },
+      {
+        name: "description",
+        content:
+          "GitHub, LeetCode, Codolio, LinkedIn, and other profiles connected to Amish Kumar's work.",
+      },
       { property: "og:title", content: "Links — Amish Kumar" },
       { property: "og:description", content: "All my profiles: code, professional, social." },
       { property: "og:url", content: "/links" },
@@ -21,10 +25,10 @@ export const Route = createFileRoute("/links")({
 });
 
 const GROUPS: { key: Social["category"]; title: string; caption: string }[] = [
-  { key: "code",         title: "Code",         caption: "Where I ship, solve, and break things." },
+  { key: "code", title: "Code", caption: "Where I ship, solve, and break things." },
   { key: "professional", title: "Professional", caption: "The formal handshake." },
-  { key: "social",       title: "Social",       caption: "The unfiltered version." },
-  { key: "contact",      title: "Direct",       caption: "The fastest way to reach me." },
+  { key: "social", title: "Social", caption: "The unfiltered version." },
+  { key: "contact", title: "Direct", caption: "The fastest way to reach me." },
 ];
 
 function LinksPage() {
@@ -35,7 +39,9 @@ function LinksPage() {
         <header className="max-w-5xl mx-auto text-center mb-20">
           <div className="eyebrow text-muted-foreground">§ Index — Elsewhere</div>
           <h1 className="serif text-6xl md:text-[10vw] leading-[0.9] mt-6">
-            All my <em className="italic">rooms</em><br/>on the internet.
+            All my <em className="italic">rooms</em>
+            <br />
+            on the internet.
           </h1>
           <p className="mt-8 text-lg text-ink-soft max-w-xl mx-auto">
             Pick a door. Every profile below is a version of me — some polished, some not.
@@ -44,7 +50,7 @@ function LinksPage() {
 
         <div className="max-w-5xl mx-auto space-y-16">
           {GROUPS.map((g) => {
-            const items = SOCIALS.filter(s => s.category === g.key);
+            const items = SOCIALS.filter((s) => s.category === g.key);
             if (!items.length) return null;
             return (
               <section key={g.key}>
@@ -74,7 +80,9 @@ function LinksPage() {
                           <span className="eyebrow text-muted-foreground w-8">0{i + 1}</span>
                           <span className="serif text-3xl md:text-5xl truncate">{s.name}</span>
                         </div>
-                        <div className="hidden md:block text-sm text-ink-soft italic">{s.handle}</div>
+                        <div className="hidden md:block text-sm text-ink-soft italic">
+                          {s.handle}
+                        </div>
                         <motion.span
                           className="serif text-3xl md:text-5xl shrink-0"
                           initial={{ x: 0 }}

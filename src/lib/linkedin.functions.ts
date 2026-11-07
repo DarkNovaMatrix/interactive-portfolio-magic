@@ -23,8 +23,12 @@ export const startLinkedInConnect = createServerFn({ method: "POST" })
     const request = getRequest();
     if (!request) throw new Error("Open LinkedIn connection from the portfolio.");
     const requestUrl = new URL(request.url);
-    const sandboxHost = requestUrl.hostname === "localhost" ? request.headers.get("x-forwarded-host") : null;
-    const returnUrl = new URL("/api/oauth/linkedin/return", sandboxHost ? `https://${sandboxHost}` : requestUrl.origin).toString();
+    const sandboxHost =
+      requestUrl.hostname === "localhost" ? request.headers.get("x-forwarded-host") : null;
+    const returnUrl = new URL(
+      "/api/oauth/linkedin/return",
+      sandboxHost ? `https://${sandboxHost}` : requestUrl.origin,
+    ).toString();
     const { authorizeAppUserOAuth } = await import("@/integrations/lovable/appUserConnector");
     const { authorizationUrl } = await authorizeAppUserOAuth({
       gatewayBaseUrl: GATEWAY_BASE_URL,
@@ -45,7 +49,8 @@ export const completeLinkedInConnect = createServerFn({ method: "POST" })
     const { exchangeAppUserOAuthCode } = await import("@/integrations/lovable/appUserConnector");
     const { saveConnectionKeyForUser } = await import("@/server/appUserConnections.server");
     const result = await exchangeAppUserOAuthCode(GATEWAY_BASE_URL, code);
-    if (result.connectorId !== CONNECTOR_ID) throw new Error("LinkedIn returned an unexpected connection.");
+    if (result.connectorId !== CONNECTOR_ID)
+      throw new Error("LinkedIn returned an unexpected connection.");
     await saveConnectionKeyForUser(context.userId, result.connectorId, result.connectionAPIKey);
     return { ok: true };
   });
@@ -67,7 +72,8 @@ export const syncLinkedInProfile = createServerFn({ method: "POST" })
     const connectionAPIKey = await getConnectionKeyForUser(context.userId, CONNECTOR_ID);
     if (!connectionAPIKey) return { connected: false as const, updated: false as const };
 
-    const { appUserReconnectRequired, callAsAppUser } = await import("@/integrations/lovable/appUserConnector");
+    const { appUserReconnectRequired, callAsAppUser } =
+      await import("@/integrations/lovable/appUserConnector");
     const response = await callAsAppUser({
       gatewayBaseUrl: GATEWAY_BASE_URL,
       connectionAPIKey,
@@ -76,12 +82,20 @@ export const syncLinkedInProfile = createServerFn({ method: "POST" })
       requiredScopes: LINKEDIN_SCOPES,
     });
     if (await appUserReconnectRequired(response)) {
-      return { connected: false as const, reconnectRequired: true as const, updated: false as const };
+      return {
+        connected: false as const,
+        reconnectRequired: true as const,
+        updated: false as const,
+      };
     }
     if (!response.ok) {
       const details = await response.text();
       console.error(`LinkedIn profile refresh failed [${response.status}]: ${details}`);
-      return { connected: true as const, updated: false as const, error: "LinkedIn could not refresh this profile." };
+      return {
+        connected: true as const,
+        updated: false as const,
+        error: "LinkedIn could not refresh this profile.",
+      };
     }
 
     const profile = (await response.json()) as {
@@ -90,25 +104,42 @@ export const syncLinkedInProfile = createServerFn({ method: "POST" })
       family_name?: unknown;
       picture?: unknown;
     };
-    const name = typeof profile.name === "string"
-      ? profile.name.trim()
-      : [profile.given_name, profile.family_name].filter((part): part is string => typeof part === "string").join(" ").trim();
-    if (!name) return { connected: true as const, updated: false as const, error: "LinkedIn did not share a display name." };
-    const pictureUrl = typeof profile.picture === "string" && profile.picture.startsWith("https://")
-      ? profile.picture
-      : null;
+    const name =
+      typeof profile.name === "string"
+        ? profile.name.trim()
+        : [profile.given_name, profile.family_name]
+            .filter((part): part is string => typeof part === "string")
+            .join(" ")
+            .trim();
+    if (!name)
+      return {
+        connected: true as const,
+        updated: false as const,
+        error: "LinkedIn did not share a display name.",
+      };
+    const pictureUrl =
+      typeof profile.picture === "string" && profile.picture.startsWith("https://")
+        ? profile.picture
+        : null;
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("linkedin_profile_snapshots").upsert({
-      user_id: context.userId,
-      display_name: name,
-      picture_url: pictureUrl,
-      published: true,
-      updated_at: new Date().toISOString(),
-    }, { onConflict: "user_id" });
+    const { error } = await supabaseAdmin.from("linkedin_profile_snapshots").upsert(
+      {
+        user_id: context.userId,
+        display_name: name,
+        picture_url: pictureUrl,
+        published: true,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" },
+    );
     if (error) {
       console.error("Could not save refreshed LinkedIn profile.", error);
-      return { connected: true as const, updated: false as const, error: "LinkedIn details could not be published." };
+      return {
+        connected: true as const,
+        updated: false as const,
+        error: "LinkedIn details could not be published.",
+      };
     }
     return { connected: true as const, updated: true as const, displayName: name };
   });

@@ -115,9 +115,9 @@ async function fetchGithub(user: string, token?: string): Promise<GithubStats> {
     safeFetch(`https://api.github.com/users/${user}/events/public?per_page=15`, init),
   ]);
   if (!uRes) return null;
-  const u = await uRes.json() as any;
-  const repos = rRes ? (await rRes.json() as any[]) : [];
-  const rawEvents = eRes ? (await eRes.json() as any[]) : [];
+  const u = (await uRes.json()) as any;
+  const repos = rRes ? ((await rRes.json()) as any[]) : [];
+  const rawEvents = eRes ? ((await eRes.json()) as any[]) : [];
   const events: GithubEvent[] = rawEvents.slice(0, 10).map((e) => ({
     id: String(e.id),
     type: String(e.type ?? "Event").replace(/Event$/, ""),
@@ -136,7 +136,11 @@ async function fetchGithub(user: string, token?: string): Promise<GithubStats> {
     updatedAt: r.updated_at,
   });
   const topRepos: Repo[] = [...ownedRepos]
-    .sort((a, b) => (b.stargazers_count - a.stargazers_count) || (Date.parse(b.updated_at) - Date.parse(a.updated_at)))
+    .sort(
+      (a, b) =>
+        b.stargazers_count - a.stargazers_count ||
+        Date.parse(b.updated_at) - Date.parse(a.updated_at),
+    )
     .slice(0, 6)
     .map(toRepo);
   const recentRepos: Repo[] = [...ownedRepos]
@@ -163,7 +167,7 @@ async function fetchGithub(user: string, token?: string): Promise<GithubStats> {
 async function fetchLeetCodeRecent(user: string): Promise<RecentSolve[]> {
   const r = await safeFetch(`https://alfa-leetcode-api.onrender.com/${user}/acSubmission?limit=5`);
   if (!r) return [];
-  const j = await r.json() as any;
+  const j = (await r.json()) as any;
   return (j?.submission ?? []).slice(0, 5).map((x: any) => ({
     title: x.title,
     url: `https://leetcode.com/problems/${x.titleSlug}/`,
@@ -178,7 +182,7 @@ async function fetchLeetCode(user: string): Promise<LeetCodeStats> {
     fetchLeetCodeRecent(user),
   ]);
   if (a) {
-    const j = await a.json() as any;
+    const j = (await a.json()) as any;
     if (typeof j?.solvedProblem === "number") {
       return {
         totalSolved: j.solvedProblem,
@@ -193,7 +197,7 @@ async function fetchLeetCode(user: string): Promise<LeetCodeStats> {
   }
   const b = await safeFetch(`https://leetcode-stats-api.herokuapp.com/${user}`);
   if (b) {
-    const j = await b.json() as any;
+    const j = (await b.json()) as any;
     if (j?.status === "success") {
       return {
         totalSolved: j.totalSolved,
@@ -215,13 +219,13 @@ async function fetchCodeforces(user: string): Promise<CodeforcesStats> {
     safeFetch(`https://codeforces.com/api/user.status?handle=${user}&count=5`),
   ]);
   if (!res) return null;
-  const sj = subs ? (await subs.json() as any) : null;
+  const sj = subs ? ((await subs.json()) as any) : null;
   const recent: RecentSolve[] = (sj?.status === "OK" ? sj.result : []).map((x: any) => ({
     title: `${x.problem?.contestId ?? ""}${x.problem?.index ?? ""} · ${x.problem?.name ?? "Problem"} (${x.verdict ?? "?"})`,
     url: `https://codeforces.com/contest/${x.problem?.contestId}/problem/${x.problem?.index}`,
     at: Number(x.creationTimeSeconds) * 1000,
   }));
-  const j = await res.json() as any;
+  const j = (await res.json()) as any;
   if (j?.status !== "OK" || !j.result?.[0]) return null;
   const u = j.result[0];
   return {
@@ -239,7 +243,7 @@ async function fetchCodeforces(user: string): Promise<CodeforcesStats> {
 async function fetchCodeChef(user: string): Promise<CodeChefStats> {
   const res = await safeFetch(`https://codechef-api.vercel.app/handle/${user}`);
   if (!res) return null;
-  const j = await res.json() as any;
+  const j = (await res.json()) as any;
   if (!j?.success && !j?.currentRating) return null;
   return {
     username: user,
@@ -254,7 +258,7 @@ async function fetchCodeChef(user: string): Promise<CodeChefStats> {
 async function fetchGfg(user: string): Promise<GfgStats> {
   const res = await safeFetch(`https://geeks-for-geeks-api.vercel.app/${user}`);
   if (!res) return null;
-  const j = await res.json() as any;
+  const j = (await res.json()) as any;
   const info = j?.info;
   if (!info) return null;
   return {
@@ -266,7 +270,14 @@ async function fetchGfg(user: string): Promise<GfgStats> {
 }
 
 const StatsInput = z
-  .object({ githubToken: z.string().trim().max(255).regex(/^[\w-]*$/).optional() })
+  .object({
+    githubToken: z
+      .string()
+      .trim()
+      .max(255)
+      .regex(/^[\w-]*$/)
+      .optional(),
+  })
   .optional();
 
 export const getCodingStats = createServerFn({ method: "POST" })

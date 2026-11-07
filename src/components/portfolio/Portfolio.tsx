@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  AnimatePresence,
+  useMotionValue,
+  useSpring,
+} from "framer-motion";
 import { SiteNav } from "./SiteNav";
 import { SiteFooter } from "./SiteFooter";
 
@@ -176,7 +183,8 @@ function Hero() {
       className="grain relative min-h-[100svh] flex flex-col justify-between px-6 md:px-10 pt-32 pb-10 overflow-hidden"
     >
       {/* rulebook grid */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.06]"
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.06]"
         style={{
           backgroundImage:
             "linear-gradient(to right, var(--color-ink) 1px, transparent 1px), linear-gradient(to bottom, var(--color-ink) 1px, transparent 1px)",
@@ -186,12 +194,14 @@ function Hero() {
 
       <motion.div style={{ y, opacity }} className="relative">
         <div className="flex items-baseline gap-4 mb-8">
-          <span className="eyebrow text-muted-foreground">Amish Kumar · intelligent systems, built with intent</span>
+          <span className="eyebrow text-muted-foreground">
+            Amish Kumar · intelligent systems, built with intent
+          </span>
           <span className="flex-1 h-px bg-rule" />
           <span className="eyebrow text-muted-foreground hidden md:inline">Ramapuram · IN</span>
         </div>
 
-        <h1 className="serif leading-[0.92] tracking-tight text-5xl sm:text-7xl md:text-8xl xl:text-9xl">
+        <h1 className="serif leading-[0.92] text-5xl sm:text-7xl md:text-8xl xl:text-9xl">
           <span className="block">
             <ItalicWord>Amish</ItalicWord> Kumar
           </span>
@@ -204,9 +214,9 @@ function Hero() {
         <div className="mt-10 grid md:grid-cols-3 gap-8 max-w-6xl">
           <div className="md:col-span-2">
             <p className="text-lg md:text-xl leading-relaxed max-w-2xl">
-              CS undergraduate at <u>SRM Ramapuram</u> (2024–2028). I build AI-first
-              products with real-world weight — travel, emergency response, medical
-              triage — and I'm slowly building a company around them.
+              CS undergraduate at <u>SRM Ramapuram</u> (2024–2028). I build AI-first products with
+              real-world weight — travel, emergency response, medical triage — and I'm slowly
+              building a company around them.
             </p>
           </div>
           <div className="flex flex-col justify-end gap-2">
@@ -216,14 +226,20 @@ function Hero() {
                 <span className="absolute inline-flex h-full w-full rounded-full bg-accent opacity-60 animate-ping" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
               </span>
-              <span className="text-sm">Building <em className="italic serif">Dravik</em></span>
+              <span className="text-sm">
+                Building <em className="italic serif">Dravik</em>
+              </span>
             </div>
           </div>
         </div>
 
         <div className="mt-8 flex flex-wrap gap-6 text-sm">
-          <a href="#work" className="hover-underline">Selected work ↓</a>
-          <a href="/about" className="hover-underline">Full profile ↗</a>
+          <a href="#work" className="hover-underline">
+            Selected work ↓
+          </a>
+          <a href="/about" className="hover-underline">
+            Full profile ↗
+          </a>
         </div>
       </motion.div>
 
@@ -232,12 +248,18 @@ function Hero() {
         <div className="marquee flex whitespace-nowrap py-4 serif text-4xl md:text-6xl">
           {Array.from({ length: 2 }).map((_, i) => (
             <div key={i} className="flex shrink-0 items-center gap-10 pr-10">
-              <span>AI / ML</span><Dot />
-              <span className="italic">Product Design</span><Dot />
-              <span>Cybersecurity</span><Dot />
-              <span className="italic">Founder-in-Progress</span><Dot />
-              <span>Full-Stack</span><Dot />
-              <span className="italic">Ambitious Systems</span><Dot />
+              <span>AI / ML</span>
+              <Dot />
+              <span className="italic">Product Design</span>
+              <Dot />
+              <span>Cybersecurity</span>
+              <Dot />
+              <span className="italic">Founder-in-Progress</span>
+              <Dot />
+              <span>Full-Stack</span>
+              <Dot />
+              <span className="italic">Ambitious Systems</span>
+              <Dot />
             </div>
           ))}
         </div>
@@ -265,25 +287,24 @@ function About() {
         <div className="md:col-span-9">
           <Reveal>
             <h2 className="serif text-4xl md:text-7xl leading-[1.05] mb-10">
-              I like the messy part <em className="italic">between</em> an
-              idea and a product that <em className="italic">ships</em>.
+              I like the messy part <em className="italic">between</em> an idea and a product that{" "}
+              <em className="italic">ships</em>.
             </h2>
           </Reveal>
 
           <div className="grid md:grid-cols-2 gap-10 text-base md:text-lg leading-relaxed">
             <Reveal delay={0.05}>
               <p>
-                I think in systems, not screens. I plan long, execute in bursts,
-                and try to design software that doesn't feel like software —
-                especially in high-stakes places like travel, healthcare, and
-                emergency response.
+                I think in systems, not screens. I plan long, execute in bursts, and try to design
+                software that doesn't feel like software — especially in high-stakes places like
+                travel, healthcare, and emergency response.
               </p>
             </Reveal>
             <Reveal delay={0.1}>
               <p>
-                Outside of code: gold-medal athletics and cricket, five languages
-                — English, Hindi, Bengali, Bhojpuri, French — and a stubborn
-                belief that student projects can be startup-ready.
+                Outside of code: gold-medal athletics and cricket, five languages — English, Hindi,
+                Bengali, Bhojpuri, French — and a stubborn belief that student projects can be
+                startup-ready.
               </p>
             </Reveal>
           </div>
@@ -340,7 +361,13 @@ function Work() {
 
       <div className="border-t border-ink">
         {PROJECTS.map((p) => (
-          <ProjectRow key={p.id} p={p} active={active === p.id} onEnter={() => setActive(p.id)} onLeave={() => setActive(null)} />
+          <ProjectRow
+            key={p.id}
+            p={p}
+            active={active === p.id}
+            onEnter={() => setActive(p.id)}
+            onLeave={() => setActive(null)}
+          />
         ))}
       </div>
     </section>
@@ -471,9 +498,7 @@ function Bots() {
   const [chat, setChat] = useState<{ from: "you" | "bot"; text: string }[]>([]);
 
   useEffect(() => {
-    setChat([
-      { from: "bot", text: `Hi — I'm ${bot.name}. ${bot.desc}` },
-    ]);
+    setChat([{ from: "bot", text: `Hi — I'm ${bot.name}. ${bot.desc}` }]);
   }, [active, bot.name, bot.desc]);
 
   function send() {
@@ -493,14 +518,19 @@ function Bots() {
   }
 
   return (
-    <section id="bots" className="px-6 md:px-10 py-24 md:py-40 border-t border-rule bg-ink text-paper">
+    <section
+      id="bots"
+      className="px-6 md:px-10 py-24 md:py-40 border-t border-rule bg-ink text-paper"
+    >
       <div className="grid md:grid-cols-12 gap-10 mb-16">
         <div className="md:col-span-3">
           <div className="eyebrow opacity-60 sticky top-32">§ 04 — Agents & Bots</div>
         </div>
         <div className="md:col-span-9">
           <h2 className="serif text-5xl md:text-7xl leading-none">
-            Small <em className="italic">minds</em><br />I've been building.
+            Small <em className="italic">minds</em>
+            <br />
+            I've been building.
           </h2>
           <p className="mt-6 text-paper/70 max-w-xl">
             Prototype conversational agents that live inside my products. Try one.
@@ -547,9 +577,7 @@ function Bots() {
                 >
                   <div
                     className={`max-w-[75%] px-4 py-2 text-sm leading-relaxed ${
-                      m.from === "you"
-                        ? "bg-paper text-ink"
-                        : "border border-paper/30"
+                      m.from === "you" ? "bg-paper text-ink" : "border border-paper/30"
                     }`}
                   >
                     {m.text}
@@ -572,7 +600,10 @@ function Bots() {
               placeholder={`Ask ${bot.name} something…`}
               className="flex-1 bg-transparent px-5 py-4 outline-none placeholder:text-paper/40 text-sm"
             />
-            <button type="submit" className="px-6 border-l border-paper/20 hover:bg-paper hover:text-ink transition-colors eyebrow">
+            <button
+              type="submit"
+              className="px-6 border-l border-paper/20 hover:bg-paper hover:text-ink transition-colors eyebrow"
+            >
               Send →
             </button>
           </form>
@@ -589,8 +620,7 @@ function canned(name: string, q: string) {
     return "Give me a city and a budget — I'll draft a 3-day plan you can actually afford.";
   if (name === "Nirbhay")
     return "Copy that. Sharing your location with the nearest response unit now.";
-  if (name === "Aid")
-    return "Noted symptoms. Priority triage: yellow. Notifying nearest ER.";
+  if (name === "Aid") return "Noted symptoms. Priority triage: yellow. Notifying nearest ER.";
   return "Interesting — that's outside my demo scope, but I'd love to be trained on it.";
 }
 
@@ -616,7 +646,8 @@ function Contact() {
         </div>
         <div className="md:col-span-9">
           <h2 className="serif text-6xl md:text-[9vw] leading-[0.9]">
-            Let's build<br />
+            Let's build
+            <br />
             <em className="italic">something</em>
             <span className="caret ml-2">_</span>
           </h2>
@@ -624,9 +655,8 @@ function Contact() {
           <div className="mt-16 grid md:grid-cols-2 gap-16">
             <div>
               <p className="text-lg leading-relaxed max-w-md">
-                I'm open to internships, collaborations on AI products, and
-                conversations about ambitious ideas. Reach out — I read
-                everything.
+                I'm open to internships, collaborations on AI products, and conversations about
+                ambitious ideas. Reach out — I read everything.
               </p>
               <div className="mt-10 space-y-4">
                 {[
@@ -643,9 +673,23 @@ function Contact() {
             </div>
 
             <form onSubmit={submit} className="space-y-6">
-              <Field label="Your name" value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
-              <Field label="Email" type="email" value={form.email} onChange={(v) => setForm({ ...form, email: v })} />
-              <Field label="Message" textarea value={form.msg} onChange={(v) => setForm({ ...form, msg: v })} />
+              <Field
+                label="Your name"
+                value={form.name}
+                onChange={(v) => setForm({ ...form, name: v })}
+              />
+              <Field
+                label="Email"
+                type="email"
+                value={form.email}
+                onChange={(v) => setForm({ ...form, email: v })}
+              />
+              <Field
+                label="Message"
+                textarea
+                value={form.msg}
+                onChange={(v) => setForm({ ...form, msg: v })}
+              />
               <motion.button
                 whileHover={{ x: 6 }}
                 whileTap={{ scale: 0.98 }}
@@ -707,12 +751,13 @@ function Footer() {
       <div className="eyebrow">© 2026 · Amish Kumar</div>
       <div className="serif italic text-lg">Set in Instrument Serif & Work Sans.</div>
       <div className="flex gap-6 eyebrow">
-        <a href="#top" className="hover-underline">Back to top ↑</a>
+        <a href="#top" className="hover-underline">
+          Back to top ↑
+        </a>
       </div>
     </footer>
   );
 }
-
 
 // ---------- Page ----------
 export default function Portfolio() {
@@ -732,4 +777,3 @@ export default function Portfolio() {
     </div>
   );
 }
-

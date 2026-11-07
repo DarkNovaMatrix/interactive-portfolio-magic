@@ -5,8 +5,8 @@ export async function saveConnectionKeyForUser(
   connectorId: string,
   connectionAPIKey: string,
 ): Promise<void> {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const connection_key_ciphertext = await encryptConnectionKey(connectionAPIKey);
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { error } = await supabaseAdmin.from("app_user_connections").upsert(
     {
       user_id: userId,
@@ -19,7 +19,10 @@ export async function saveConnectionKeyForUser(
   if (error) throw new Error("Could not securely save the LinkedIn connection.");
 }
 
-export async function getConnectionKeyForUser(userId: string, connectorId: string): Promise<string | null> {
+export async function getConnectionKeyForUser(
+  userId: string,
+  connectorId: string,
+): Promise<string | null> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
     .from("app_user_connections")
