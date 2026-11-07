@@ -114,7 +114,7 @@
   h1, h2, h3, h4, .serif {
     font-family: var(--font-serif);
     font-weight: 400;
-    letter-spacing: -0.01em;
+    letter-spacing: 0;
   }
   ::selection {
     background: var(--color-ink);

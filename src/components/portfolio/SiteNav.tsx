@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
@@ -53,8 +53,10 @@ const LINKS: [string, string][] = [
 
 export function SiteNav() {
   const [open, setOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const firstMenuLinkRef = useRef<HTMLAnchorElement>(null);
   const escort = useAetherEscort();
-  const top4 = SOCIALS.filter(s => ["GitHub","LinkedIn","Twitter / X","Instagram"].includes(s.name));
+  const top4 = SOCIALS.filter(s => ["GitHub","Codolio","LinkedIn","Twitter / X","Instagram"].includes(s.name));
 
   useEffect(() => {
     if (!open) return;
@@ -63,10 +65,12 @@ export function SiteNav() {
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") setOpen(false);
     };
+    firstMenuLinkRef.current?.focus();
     window.addEventListener("keydown", closeOnEscape);
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", closeOnEscape);
+      menuButtonRef.current?.focus();
     };
   }, [open]);
 
@@ -98,6 +102,7 @@ export function SiteNav() {
         </nav>
 
         <Button
+          ref={menuButtonRef}
           variant="ghost"
           size="icon"
           onClick={() => setOpen((value) => !value)}
@@ -130,6 +135,7 @@ export function SiteNav() {
               {LINKS.map(([label, href], index) => (
                 <Link
                   key={href}
+                  ref={index === 0 ? firstMenuLinkRef : undefined}
                   to={href}
                   onClick={(event) => { setOpen(false); escort(href, event); }}
                   className="group flex items-center justify-between border-b border-border py-4 serif text-3xl transition-colors hover:text-accent md:py-5 md:text-4xl"

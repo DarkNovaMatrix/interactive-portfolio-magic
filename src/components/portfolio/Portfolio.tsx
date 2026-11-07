@@ -191,7 +191,7 @@ function Hero() {
           <span className="eyebrow text-muted-foreground hidden md:inline">Ramapuram · IN</span>
         </div>
 
-        <h1 className="serif leading-[0.92] tracking-tight text-5xl sm:text-7xl md:text-8xl xl:text-9xl">
+        <h1 className="serif leading-[0.92] text-5xl sm:text-7xl md:text-8xl xl:text-9xl">
           <span className="block">
             <ItalicWord>Amish</ItalicWord> Kumar
           </span>
