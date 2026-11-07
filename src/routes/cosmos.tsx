@@ -13,9 +13,16 @@ export const Route = createFileRoute("/cosmos")({
   head: () => ({
     meta: [
       { title: "Cosmos — Fly through Amish's universe" },
-      { name: "description", content: "Pilot a rocket through a real-scale universe. Land on planets tagged with Amish's projects, then zoom out through the galaxy to the cosmic web." },
+      {
+        name: "description",
+        content:
+          "Pilot a rocket through a real-scale universe. Land on planets tagged with Amish's projects, then zoom out through the galaxy to the cosmic web.",
+      },
       { property: "og:title", content: "Cosmos — drivable universe" },
-      { property: "og:description", content: "WASD + mouse. Land on project-planets. Zoom out until you see the cosmic web." },
+      {
+        property: "og:description",
+        content: "WASD + mouse. Land on project-planets. Zoom out until you see the cosmic web.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -38,32 +45,120 @@ type Body = {
 };
 
 const SUN: Body = {
-  id: "sun", name: "Aether Prime", radius: 3.8, orbit: 0, speed: 0,
-  color: "#ffb347", emissive: 2.5,
+  id: "sun",
+  name: "Aether Prime",
+  radius: 3.8,
+  orbit: 0,
+  speed: 0,
+  color: "#ffb347",
+  emissive: 2.5,
 };
 
 // Amish's projects mapped onto planet-sized worlds around the sun.
 const PLANETS: Body[] = [
-  { id: "dravik",    name: "Dravik",       radius: 1.1, orbit: 10,  speed: 0.14, color: "#5aa9ff",
-    project: { title: "Dravik", tag: "AI TRAVEL SAFETY",   blurb: "Flutter + Node + Mongo. AI assistant, SOS, group sync, weather-risk, route safety." } },
-  { id: "smartaid",  name: "SmartAid",     radius: 0.95,orbit: 15,  speed: 0.10, color: "#9be7c4",
-    project: { title: "SmartAid", tag: "HEALTHCARE AI",    blurb: "Voice-note → medical record with LLM + RAG. Explainable clinical decisions." } },
-  { id: "anubhav",   name: "Anubhav",      radius: 1.4, orbit: 21,  speed: 0.07, color: "#ff7a3c",
+  {
+    id: "dravik",
+    name: "Dravik",
+    radius: 1.1,
+    orbit: 10,
+    speed: 0.14,
+    color: "#5aa9ff",
+    project: {
+      title: "Dravik",
+      tag: "AI TRAVEL SAFETY",
+      blurb: "Flutter + Node + Mongo. AI assistant, SOS, group sync, weather-risk, route safety.",
+    },
+  },
+  {
+    id: "smartaid",
+    name: "SmartAid",
+    radius: 0.95,
+    orbit: 15,
+    speed: 0.1,
+    color: "#9be7c4",
+    project: {
+      title: "SmartAid",
+      tag: "HEALTHCARE AI",
+      blurb: "Voice-note → medical record with LLM + RAG. Explainable clinical decisions.",
+    },
+  },
+  {
+    id: "anubhav",
+    name: "Anubhav",
+    radius: 1.4,
+    orbit: 21,
+    speed: 0.07,
+    color: "#ff7a3c",
     ring: { inner: 1.8, outer: 2.6, color: "#ffcf8a" },
-    project: { title: "Anubhav", tag: "TOURISM · JHARKHAND", blurb: "AI itinerary + AR/VR + blockchain + multilingual chatbot." } },
-  { id: "nirbhay",   name: "Nirbhay AI",   radius: 1.0, orbit: 28,  speed: 0.05, color: "#ff6ad5",
-    project: { title: "Nirbhay AI", tag: "EMERGENCY DISPATCH", blurb: "AI 911. Transcribes calls, prioritizes incidents, powers response." } },
-  { id: "tor",       name: "Threat-Attr.", radius: 0.8, orbit: 34,  speed: 0.04, color: "#c8a2ff",
-    project: { title: "TOR Threat Attribution", tag: "RESEARCH", blurb: "Behavioral analysis + cyber threat attribution. Proposal to TN Police." } },
-  { id: "optitask",  name: "OptiTask",     radius: 0.7, orbit: 40,  speed: 0.032,color: "#ffe08a",
-    project: { title: "OptiTask", tag: "PRODUCTIVITY", blurb: "First shipped product. Task engine, end-to-end." } },
-  { id: "library",   name: "LibrarySys",   radius: 0.6, orbit: 46,  speed: 0.026,color: "#a5c8c8",
-    project: { title: "Library System", tag: "FOUNDATIONS", blurb: "Early full-stack. Where the discipline started." } },
+    project: {
+      title: "Anubhav",
+      tag: "TOURISM · JHARKHAND",
+      blurb: "AI itinerary + AR/VR + blockchain + multilingual chatbot.",
+    },
+  },
+  {
+    id: "nirbhay",
+    name: "Nirbhay AI",
+    radius: 1.0,
+    orbit: 28,
+    speed: 0.05,
+    color: "#ff6ad5",
+    project: {
+      title: "Nirbhay AI",
+      tag: "EMERGENCY DISPATCH",
+      blurb: "AI 911. Transcribes calls, prioritizes incidents, powers response.",
+    },
+  },
+  {
+    id: "tor",
+    name: "Threat-Attr.",
+    radius: 0.8,
+    orbit: 34,
+    speed: 0.04,
+    color: "#c8a2ff",
+    project: {
+      title: "TOR Threat Attribution",
+      tag: "RESEARCH",
+      blurb: "Behavioral analysis + cyber threat attribution. Proposal to TN Police.",
+    },
+  },
+  {
+    id: "optitask",
+    name: "OptiTask",
+    radius: 0.7,
+    orbit: 40,
+    speed: 0.032,
+    color: "#ffe08a",
+    project: {
+      title: "OptiTask",
+      tag: "PRODUCTIVITY",
+      blurb: "First shipped product. Task engine, end-to-end.",
+    },
+  },
+  {
+    id: "library",
+    name: "LibrarySys",
+    radius: 0.6,
+    orbit: 46,
+    speed: 0.026,
+    color: "#a5c8c8",
+    project: {
+      title: "Library System",
+      tag: "FOUNDATIONS",
+      blurb: "Early full-stack. Where the discipline started.",
+    },
+  },
 ];
 
 /* ═══════════════════════════════ Page ═══════════════════════════════ */
 
-type Telemetry = { alt: number; vspeed: number; tilt: number; stab: Stability; near: string } | null;
+type Telemetry = {
+  alt: number;
+  vspeed: number;
+  tilt: number;
+  stab: Stability;
+  near: string;
+} | null;
 
 function CosmosPage() {
   const [selected, setSelected] = useState<Body | null>(null);
@@ -131,12 +226,16 @@ function CosmosPage() {
       {/* HUD */}
       <div className="pointer-events-none absolute inset-0 flex flex-col">
         <header className="pointer-events-auto flex items-center justify-between px-6 md:px-10 py-4 bg-gradient-to-b from-black/60 to-transparent">
-          <Link to="/" className="serif text-xl">← Amish<span className="text-accent">.</span></Link>
+          <Link to="/" className="serif text-xl">
+            ← Amish<span className="text-accent">.</span>
+          </Link>
           <div className="text-[10px] tracking-[0.35em] uppercase opacity-80 flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#5ad4ff] animate-pulse" />
             AETHER · Observatory
           </div>
-          <div className="text-[10px] tracking-[0.35em] uppercase opacity-60">scale · {scaleLabel}</div>
+          <div className="text-[10px] tracking-[0.35em] uppercase opacity-60">
+            scale · {scaleLabel}
+          </div>
         </header>
 
         {/* Crosshair */}
@@ -156,15 +255,27 @@ function CosmosPage() {
           {/* Left: telemetry */}
           <div className="pointer-events-none font-mono text-[11px] uppercase tracking-widest text-[#a8d8ff] space-y-1">
             <div className="opacity-70">— telemetry —</div>
-            <div>velocity <span className="text-white">{speed.toFixed(1)}</span> u/s</div>
-            <div>distance <span className="text-white">{formatDist(distance)}</span></div>
-            <div>frame     <span className="text-white">{scaleLabel}</span></div>
+            <div>
+              velocity <span className="text-white">{speed.toFixed(1)}</span> u/s
+            </div>
+            <div>
+              distance <span className="text-white">{formatDist(distance)}</span>
+            </div>
+            <div>
+              frame <span className="text-white">{scaleLabel}</span>
+            </div>
             {tele && (
               <>
                 <div className="opacity-70 mt-2">— approach · {tele.near} —</div>
-                <div>altitude  <span className="text-white">{tele.alt.toFixed(2)} u</span></div>
-                <div>v-speed   <span className="text-white">{tele.vspeed.toFixed(1)} m/s</span></div>
-                <div>tilt      <span className="text-white">{tele.tilt.toFixed(0)}°</span></div>
+                <div>
+                  altitude <span className="text-white">{tele.alt.toFixed(2)} u</span>
+                </div>
+                <div>
+                  v-speed <span className="text-white">{tele.vspeed.toFixed(1)} m/s</span>
+                </div>
+                <div>
+                  tilt <span className="text-white">{tele.tilt.toFixed(0)}°</span>
+                </div>
                 <div>
                   stability{" "}
                   <span
@@ -185,11 +296,21 @@ function CosmosPage() {
 
           {/* Right: controls legend */}
           <div className="pointer-events-none font-mono text-[10px] uppercase tracking-widest text-white/60 text-right space-y-0.5 hidden md:block">
-            <div><kbd>W A S D</kbd> thrust · strafe</div>
-            <div><kbd>Space</kbd> up · <kbd>Shift</kbd> down</div>
-            <div><kbd>Mouse</kbd> look · <kbd>Q E</kbd> roll</div>
-            <div><kbd>F</kbd> assisted landing · <kbd>T</kbd> take off</div>
-            <div><kbd>R</kbd> return home</div>
+            <div>
+              <kbd>W A S D</kbd> thrust · strafe
+            </div>
+            <div>
+              <kbd>Space</kbd> up · <kbd>Shift</kbd> down
+            </div>
+            <div>
+              <kbd>Mouse</kbd> look · <kbd>Q E</kbd> roll
+            </div>
+            <div>
+              <kbd>F</kbd> assisted landing · <kbd>T</kbd> take off
+            </div>
+            <div>
+              <kbd>R</kbd> return home
+            </div>
           </div>
         </div>
 
@@ -235,12 +356,22 @@ function CosmosPage() {
               className="pointer-events-auto absolute top-24 right-4 md:right-8 w-[340px] bg-black/75 backdrop-blur-md border border-white/15 rounded-2xl p-5"
             >
               <div className="flex items-center justify-between">
-                <div className="text-[10px] uppercase tracking-widest" style={{ color: selected.color }}>
+                <div
+                  className="text-[10px] uppercase tracking-widest"
+                  style={{ color: selected.color }}
+                >
                   {selected.project?.tag ?? "STELLAR BODY"}
                 </div>
-                <button onClick={() => setSelected(null)} className="text-xs opacity-60 hover:opacity-100">✕</button>
+                <button
+                  onClick={() => setSelected(null)}
+                  className="text-xs opacity-60 hover:opacity-100"
+                >
+                  ✕
+                </button>
               </div>
-              <h2 className="serif italic text-3xl mt-2">{selected.project?.title ?? selected.name}</h2>
+              <h2 className="serif italic text-3xl mt-2">
+                {selected.project?.title ?? selected.name}
+              </h2>
               <p className="text-sm opacity-85 mt-2 leading-relaxed">
                 {selected.project?.blurb ?? `A body in Amish's cosmos, ${selected.name}.`}
               </p>
@@ -248,10 +379,16 @@ function CosmosPage() {
                 orbit · {selected.orbit}u &nbsp;·&nbsp; radius · {selected.radius}u
               </div>
               <div className="mt-4 flex gap-3">
-                <Link to="/projects" className="text-[11px] uppercase tracking-widest px-3 py-1.5 border border-white/25 rounded-full hover:bg-white hover:text-black transition">
+                <Link
+                  to="/projects"
+                  className="text-[11px] uppercase tracking-widest px-3 py-1.5 border border-white/25 rounded-full hover:bg-white hover:text-black transition"
+                >
                   all projects →
                 </Link>
-                <Link to="/about" className="text-[11px] uppercase tracking-widest px-3 py-1.5 border border-white/25 rounded-full hover:bg-white hover:text-black transition">
+                <Link
+                  to="/about"
+                  className="text-[11px] uppercase tracking-widest px-3 py-1.5 border border-white/25 rounded-full hover:bg-white hover:text-black transition"
+                >
                   about
                 </Link>
               </div>
@@ -290,11 +427,17 @@ function Universe({ onScaleChange }: { onScaleChange: (s: string) => void }) {
       const arm = Math.floor(Math.random() * arms);
       const r = t * 3500 + Math.random() * 40;
       const angle = r * 0.006 + (arm / arms) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
-      positions[i*3]   = Math.cos(angle) * r + (Math.random() - 0.5) * 30;
-      positions[i*3+1] = (Math.random() - 0.5) * (60 - t * 40);
-      positions[i*3+2] = Math.sin(angle) * r + (Math.random() - 0.5) * 30;
-      const c = new THREE.Color().lerpColors(new THREE.Color("#ffd48a"), new THREE.Color("#6ab0ff"), t);
-      colors[i*3] = c.r; colors[i*3+1] = c.g; colors[i*3+2] = c.b;
+      positions[i * 3] = Math.cos(angle) * r + (Math.random() - 0.5) * 30;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * (60 - t * 40);
+      positions[i * 3 + 2] = Math.sin(angle) * r + (Math.random() - 0.5) * 30;
+      const c = new THREE.Color().lerpColors(
+        new THREE.Color("#ffd48a"),
+        new THREE.Color("#6ab0ff"),
+        t,
+      );
+      colors[i * 3] = c.r;
+      colors[i * 3 + 1] = c.g;
+      colors[i * 3 + 2] = c.b;
     }
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.BufferAttribute(positions, 3));
@@ -306,11 +449,13 @@ function Universe({ onScaleChange }: { onScaleChange: (s: string) => void }) {
   const webGeo = useMemo(() => {
     const nodes: THREE.Vector3[] = [];
     for (let i = 0; i < 90; i++) {
-      nodes.push(new THREE.Vector3(
-        (Math.random() - 0.5) * 60000,
-        (Math.random() - 0.5) * 60000,
-        (Math.random() - 0.5) * 60000,
-      ));
+      nodes.push(
+        new THREE.Vector3(
+          (Math.random() - 0.5) * 60000,
+          (Math.random() - 0.5) * 60000,
+          (Math.random() - 0.5) * 60000,
+        ),
+      );
     }
     const N = 30000;
     const positions = new Float32Array(N * 3);
@@ -318,11 +463,23 @@ function Universe({ onScaleChange }: { onScaleChange: (s: string) => void }) {
     for (let i = 0; i < N; i++) {
       const n = nodes[Math.floor(Math.random() * nodes.length)];
       const spread = Math.pow(Math.random(), 2.4) * 8000;
-      const dir = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+      const dir = new THREE.Vector3(
+        Math.random() - 0.5,
+        Math.random() - 0.5,
+        Math.random() - 0.5,
+      ).normalize();
       const p = n.clone().addScaledVector(dir, spread);
-      positions[i*3] = p.x; positions[i*3+1] = p.y; positions[i*3+2] = p.z;
-      const c = new THREE.Color().lerpColors(new THREE.Color("#4ea8ff"), new THREE.Color("#ffb8f0"), Math.random());
-      colors[i*3] = c.r; colors[i*3+1] = c.g; colors[i*3+2] = c.b;
+      positions[i * 3] = p.x;
+      positions[i * 3 + 1] = p.y;
+      positions[i * 3 + 2] = p.z;
+      const c = new THREE.Color().lerpColors(
+        new THREE.Color("#4ea8ff"),
+        new THREE.Color("#ffb8f0"),
+        Math.random(),
+      );
+      colors[i * 3] = c.r;
+      colors[i * 3 + 1] = c.g;
+      colors[i * 3 + 2] = c.b;
     }
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.BufferAttribute(positions, 3));
@@ -353,10 +510,13 @@ function Universe({ onScaleChange }: { onScaleChange: (s: string) => void }) {
     const gMat = galaxyRef.current?.material as any;
     const wMat = webRef.current?.material as any;
 
-    if (sMat?.opacity !== undefined) sMat.opacity = THREE.MathUtils.clamp(1 - (d - 400) / 800, 0, 1);
-    if (gMat?.opacity !== undefined) gMat.opacity = THREE.MathUtils.clamp((d - 150) / 400 * (1 - (d - 5000) / 5000), 0, 0.95);
+    if (sMat?.opacity !== undefined)
+      sMat.opacity = THREE.MathUtils.clamp(1 - (d - 400) / 800, 0, 1);
+    if (gMat?.opacity !== undefined)
+      gMat.opacity = THREE.MathUtils.clamp(((d - 150) / 400) * (1 - (d - 5000) / 5000), 0, 0.95);
     if (galaxies.current) galaxies.current.visible = d > 1500;
-    if (wMat?.opacity !== undefined) wMat.opacity = THREE.MathUtils.clamp((d - 8000) / 8000, 0, 0.9);
+    if (wMat?.opacity !== undefined)
+      wMat.opacity = THREE.MathUtils.clamp((d - 8000) / 8000, 0, 0.9);
     if (galaxyRef.current) galaxyRef.current.rotation.y += 0.00005;
     if (webRef.current) webRef.current.rotation.y += 0.00002;
 
@@ -376,7 +536,14 @@ function Universe({ onScaleChange }: { onScaleChange: (s: string) => void }) {
 
       <points ref={galaxyRef}>
         <primitive attach="geometry" object={galaxyGeo} />
-        <pointsMaterial size={0.9} vertexColors transparent opacity={0} depthWrite={false} sizeAttenuation />
+        <pointsMaterial
+          size={0.9}
+          vertexColors
+          transparent
+          opacity={0}
+          depthWrite={false}
+          sizeAttenuation
+        />
       </points>
 
       <group ref={galaxies}>
@@ -396,7 +563,14 @@ function Universe({ onScaleChange }: { onScaleChange: (s: string) => void }) {
 
       <points ref={webRef}>
         <primitive attach="geometry" object={webGeo} />
-        <pointsMaterial size={40} vertexColors transparent opacity={0} depthWrite={false} sizeAttenuation />
+        <pointsMaterial
+          size={40}
+          vertexColors
+          transparent
+          opacity={0}
+          depthWrite={false}
+          sizeAttenuation
+        />
       </points>
     </>
   );
@@ -480,7 +654,10 @@ function SunMesh({ body }: { body: Body }) {
 }
 
 function OrbitingPlanet({
-  body, track, frozen, onClick,
+  body,
+  track,
+  frozen,
+  onClick,
 }: {
   body: Body;
   track: (pos: THREE.Vector3) => void;
@@ -528,7 +705,12 @@ function OrbitingPlanet({
         {body.ring && (
           <mesh rotation={[Math.PI / 2.3, 0, 0]}>
             <ringGeometry args={[body.ring.inner, body.ring.outer, 128]} />
-            <meshBasicMaterial color={body.ring.color} side={THREE.DoubleSide} transparent opacity={0.55} />
+            <meshBasicMaterial
+              color={body.ring.color}
+              side={THREE.DoubleSide}
+              transparent
+              opacity={0.55}
+            />
           </mesh>
         )}
         <Html position={[0, body.radius + 0.6, 0]} center distanceFactor={14}>
@@ -628,7 +810,9 @@ function PilotCamera({
         setLanded(null);
         assist.current = false;
         camera.position.copy(home.current);
-        yaw.current = 0; pitch.current = -0.15; roll.current = 0;
+        yaw.current = 0;
+        pitch.current = -0.15;
+        roll.current = 0;
         velocity.current.set(0, 0, 0);
       }
       if (e.code === "KeyF") assist.current = true;
@@ -645,7 +829,7 @@ function PilotCamera({
     };
     const onMove = (e: MouseEvent) => {
       if (!pointerLocked.current) return;
-      yaw.current   -= e.movementX * 0.002;
+      yaw.current -= e.movementX * 0.002;
       pitch.current -= e.movementY * 0.002;
       pitch.current = THREE.MathUtils.clamp(pitch.current, -1.4, 1.4);
     };
@@ -682,7 +866,9 @@ function PilotCamera({
       const n = camera.position.clone().sub(near.pos).normalize();
       camera.position.copy(near.pos).addScaledVector(n, near.b.radius + 0.35);
       velocity.current.set(0, 0, 0);
-      const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(pitch.current, yaw.current, 0, "YXZ"));
+      const q = new THREE.Quaternion().setFromEuler(
+        new THREE.Euler(pitch.current, yaw.current, 0, "YXZ"),
+      );
       camera.quaternion.slerp(q, 0.25);
       teleAcc.current += dt;
       if (teleAcc.current > 0.2) {
@@ -700,18 +886,20 @@ function PilotCamera({
     roll.current *= 0.96;
 
     // Build rotation
-    const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(pitch.current, yaw.current, roll.current, "YXZ"));
+    const q = new THREE.Quaternion().setFromEuler(
+      new THREE.Euler(pitch.current, yaw.current, roll.current, "YXZ"),
+    );
     camera.quaternion.slerp(q, 0.25);
 
     const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
-    const right   = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
-    const up      = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
+    const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+    const up = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
 
     // Speed scales with distance from origin so we can cross the universe.
     const dist = camera.position.length();
     const nearPlanet = near && near.d < near.b.radius + 9;
     const baseSpeed = nearPlanet ? 3.5 : 15 + dist * 0.08;
-    const boost = (k["ShiftLeft"] && k["KeyW"]) ? 4 : 1;
+    const boost = k["ShiftLeft"] && k["KeyW"] ? 4 : 1;
 
     const accel = new THREE.Vector3();
     if (k["KeyW"]) accel.addScaledVector(forward, baseSpeed * boost);
@@ -752,7 +940,10 @@ function PilotCamera({
         // Level the ship with the ground.
         const look = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
         const m = new THREE.Matrix4().lookAt(new THREE.Vector3(), look, n);
-        camera.quaternion.slerp(new THREE.Quaternion().setFromRotationMatrix(m), Math.min(1, dt * 2.5));
+        camera.quaternion.slerp(
+          new THREE.Quaternion().setFromRotationMatrix(m),
+          Math.min(1, dt * 2.5),
+        );
       }
 
       // Touchdown check
@@ -771,7 +962,13 @@ function PilotCamera({
         }
       }
 
-      tele = { alt: Math.max(0, alt), vspeed, tilt, stab: stabilityOf(vspeed, tilt), near: near.b.name };
+      tele = {
+        alt: Math.max(0, alt),
+        vspeed,
+        tilt,
+        stab: stabilityOf(vspeed, tilt),
+        near: near.b.name,
+      };
     } else {
       assist.current = false;
     }
@@ -862,10 +1059,15 @@ function DeepDivePanel({ body, onTakeoff }: { body: Body; onTakeoff: () => void 
             <div className="space-y-4">
               {(dive?.tech ?? []).map((g) => (
                 <div key={g.layer}>
-                  <div className="text-[10px] uppercase tracking-widest text-white/50">{g.layer}</div>
+                  <div className="text-[10px] uppercase tracking-widest text-white/50">
+                    {g.layer}
+                  </div>
                   <div className="mt-1.5 flex flex-wrap gap-1.5">
                     {g.items.map((it) => (
-                      <span key={it} className="text-[12px] px-2.5 py-1 rounded-full border border-white/15 bg-white/5">
+                      <span
+                        key={it}
+                        className="text-[12px] px-2.5 py-1 rounded-full border border-white/15 bg-white/5"
+                      >
                         {it}
                       </span>
                     ))}
@@ -876,7 +1078,9 @@ function DeepDivePanel({ body, onTakeoff }: { body: Body; onTakeoff: () => void 
           )}
           {tab === "Demos" && (
             <div className="space-y-2.5">
-              {(dive?.links ?? []).length === 0 && <p className="text-white/50">No public demos yet.</p>}
+              {(dive?.links ?? []).length === 0 && (
+                <p className="text-white/50">No public demos yet.</p>
+              )}
               {(dive?.links ?? []).map((l) => (
                 <a
                   key={l.url}
@@ -906,7 +1110,9 @@ function DeepDivePanel({ body, onTakeoff }: { body: Body; onTakeoff: () => void 
                     className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full"
                     style={{ background: body.color }}
                   />
-                  <div className="text-[10px] uppercase tracking-widest text-white/50">{t.when}</div>
+                  <div className="text-[10px] uppercase tracking-widest text-white/50">
+                    {t.when}
+                  </div>
                   <div className="mt-0.5">{t.what}</div>
                 </li>
               ))}
@@ -920,7 +1126,11 @@ function DeepDivePanel({ body, onTakeoff }: { body: Body; onTakeoff: () => void 
 
 /* ═══════════════════════════════ Mobile controls ═══════════════════════════════ */
 
-function MobileControls({ onChange }: { onChange: (v: { f: number; s: number; u: number }) => void }) {
+function MobileControls({
+  onChange,
+}: {
+  onChange: (v: { f: number; s: number; u: number }) => void;
+}) {
   const [isTouch, setIsTouch] = useState(false);
   const state = useRef({ f: 0, s: 0, u: 0 });
 
@@ -947,18 +1157,28 @@ function MobileControls({ onChange }: { onChange: (v: { f: number; s: number; u:
           onTouchStart={() => set({ u: 1 })}
           onTouchEnd={() => set({ u: 0 })}
           className="w-14 h-14 rounded-full bg-black/40 border border-white/25 backdrop-blur text-white text-lg"
-        >↑</button>
+        >
+          ↑
+        </button>
         <button
           onTouchStart={() => set({ u: -1 })}
           onTouchEnd={() => set({ u: 0 })}
           className="w-14 h-14 rounded-full bg-black/40 border border-white/25 backdrop-blur text-white text-lg"
-        >↓</button>
+        >
+          ↓
+        </button>
       </div>
     </div>
   );
 }
 
-function Joystick({ onMove, onRelease }: { onMove: (x: number, y: number) => void; onRelease: () => void }) {
+function Joystick({
+  onMove,
+  onRelease,
+}: {
+  onMove: (x: number, y: number) => void;
+  onRelease: () => void;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const knob = useRef<HTMLDivElement>(null);
   const active = useRef(false);

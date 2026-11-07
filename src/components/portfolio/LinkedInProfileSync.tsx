@@ -63,20 +63,26 @@ export function LinkedInProfileSync() {
           } catch {
             if (!cancelled) setNotice("LinkedIn could not refresh this profile.");
           }
-          refreshTimer = window.setInterval(() => {
-            void syncProfile().then((latest) => {
-              if (cancelled) return;
-              if (latest.updated) setNotice(`LinkedIn profile refreshed as ${latest.displayName}.`);
-              else if ("error" in latest && latest.error) setNotice(latest.error);
-              else if ("reconnectRequired" in latest && latest.reconnectRequired) {
-                setStatus("disconnected");
-                setNotice("LinkedIn access needs to be renewed.");
-                if (refreshTimer !== undefined) window.clearInterval(refreshTimer);
-              }
-            }).catch(() => {
-              if (!cancelled) setNotice("LinkedIn could not refresh this profile.");
-            });
-          }, 5 * 60 * 1000);
+          refreshTimer = window.setInterval(
+            () => {
+              void syncProfile()
+                .then((latest) => {
+                  if (cancelled) return;
+                  if (latest.updated)
+                    setNotice(`LinkedIn profile refreshed as ${latest.displayName}.`);
+                  else if ("error" in latest && latest.error) setNotice(latest.error);
+                  else if ("reconnectRequired" in latest && latest.reconnectRequired) {
+                    setStatus("disconnected");
+                    setNotice("LinkedIn access needs to be renewed.");
+                    if (refreshTimer !== undefined) window.clearInterval(refreshTimer);
+                  }
+                })
+                .catch(() => {
+                  if (!cancelled) setNotice("LinkedIn could not refresh this profile.");
+                });
+            },
+            5 * 60 * 1000,
+          );
         }
       })
       .catch(() => {
@@ -104,13 +110,19 @@ export function LinkedInProfileSync() {
           if (poll !== undefined) window.clearInterval(poll);
         };
         const onMessage = (event: MessageEvent) => {
-          const message = event.data as { type?: unknown; connectorId?: unknown; code?: unknown } | null;
+          const message = event.data as {
+            type?: unknown;
+            connectorId?: unknown;
+            code?: unknown;
+          } | null;
           if (
             event.origin !== window.location.origin ||
             event.source !== popup ||
             message?.connectorId !== "linkedin" ||
-            (message.type !== "appUserConnectorOAuthComplete" && message.type !== "appUserConnectorOAuthFailed")
-          ) return;
+            (message.type !== "appUserConnectorOAuthComplete" &&
+              message.type !== "appUserConnectorOAuthFailed")
+          )
+            return;
           cleanup();
           if (message.type === "appUserConnectorOAuthComplete") {
             resolve({ code: typeof message.code === "string" ? message.code : null });
@@ -136,9 +148,13 @@ export function LinkedInProfileSync() {
       await refreshStatus();
       const latest = await syncProfile();
       setStatus(latest.connected ? "connected" : "disconnected");
-      if (latest.updated) setNotice(`Connected and refreshed ${latest.displayName}'s public identity.`);
+      if (latest.updated)
+        setNotice(`Connected and refreshed ${latest.displayName}'s public identity.`);
       else if ("error" in latest && latest.error) setNotice(latest.error);
-      else setNotice("LinkedIn connected. The public identity fields will refresh when this page is opened.");
+      else
+        setNotice(
+          "LinkedIn connected. The public identity fields will refresh when this page is opened.",
+        );
     } catch (error) {
       if (!popup.closed) popup.close();
       setNotice(error instanceof Error ? error.message : "LinkedIn could not be connected.");
@@ -167,9 +183,14 @@ export function LinkedInProfileSync() {
           <div className="eyebrow text-muted-foreground">Profile connections</div>
           <h2 className="serif mt-2 text-3xl">LinkedIn identity</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            LinkedIn shares only your approved basic identity here. It does not provide your full work history, projects, or skills through this access.
+            LinkedIn shares only your approved basic identity here. It does not provide your full
+            work history, projects, or skills through this access.
           </p>
-          {notice && <p role="status" className="mt-3 text-sm text-foreground">{notice}</p>}
+          {notice && (
+            <p role="status" className="mt-3 text-sm text-foreground">
+              {notice}
+            </p>
+          )}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {status === "connected" && (
@@ -178,9 +199,25 @@ export function LinkedInProfileSync() {
               Refresh profile
             </Button>
           )}
-          <Button variant={status === "connected" ? "ghost" : "default"} onClick={connect} disabled={busy || status === "loading" || status === "unavailable"}>
-            {busy ? <LoaderCircle className="animate-spin" /> : status === "connected" ? <Check /> : <Unplug />}
-            {status === "connected" ? "Reconnect LinkedIn" : status === "loading" ? "Checking…" : status === "unavailable" ? "Owner access required" : "Connect LinkedIn"}
+          <Button
+            variant={status === "connected" ? "ghost" : "default"}
+            onClick={connect}
+            disabled={busy || status === "loading" || status === "unavailable"}
+          >
+            {busy ? (
+              <LoaderCircle className="animate-spin" />
+            ) : status === "connected" ? (
+              <Check />
+            ) : (
+              <Unplug />
+            )}
+            {status === "connected"
+              ? "Reconnect LinkedIn"
+              : status === "loading"
+                ? "Checking…"
+                : status === "unavailable"
+                  ? "Owner access required"
+                  : "Connect LinkedIn"}
           </Button>
         </div>
       </div>

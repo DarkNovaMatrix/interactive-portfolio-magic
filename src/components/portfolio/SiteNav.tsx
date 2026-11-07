@@ -40,7 +40,6 @@ function AuthLink() {
   );
 }
 
-
 const LINKS: [string, string][] = [
   ["Home", "/"],
   ["Work", "/projects"],
@@ -56,7 +55,9 @@ export function SiteNav() {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const firstMenuLinkRef = useRef<HTMLAnchorElement>(null);
   const escort = useAetherEscort();
-  const top4 = SOCIALS.filter(s => ["GitHub","Codolio","LinkedIn","Twitter / X","Instagram"].includes(s.name));
+  const top4 = SOCIALS.filter((s) =>
+    ["GitHub", "Codolio", "LinkedIn", "Twitter / X", "Instagram"].includes(s.name),
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -76,90 +77,107 @@ export function SiteNav() {
 
   return (
     <>
-    <header className="fixed top-0 inset-x-0 z-[110] border-b border-border bg-background/90 text-foreground backdrop-blur-md">
-      <div className="relative z-50 flex items-center justify-between px-6 md:px-10 py-4">
-        <Link to="/" className="serif text-2xl leading-none" onClick={(e) => { setOpen(false); escort("/", e); }}>
-          Amish<span className="text-accent">.</span>
-        </Link>
+      <header className="fixed top-0 inset-x-0 z-[110] border-b border-border bg-background/90 text-foreground backdrop-blur-md">
+        <div className="relative z-50 flex items-center justify-between px-6 md:px-10 py-4">
+          <Link
+            to="/"
+            className="serif text-2xl leading-none"
+            onClick={(e) => {
+              setOpen(false);
+              escort("/", e);
+            }}
+          >
+            Amish<span className="text-accent">.</span>
+          </Link>
 
-        <nav className="hidden xl:flex gap-5 text-[11px] uppercase tracking-widest items-center">
-          {LINKS.map(([l, h]) => (
-            <Link
-              key={h}
-              to={h}
-              onClick={(e) => escort(h, e)}
-              className="hover-underline"
-              activeProps={{ className: "italic" }}
-              activeOptions={{ exact: true }}
-            >
-              {l}
-            </Link>
-          ))}
-          <span className="h-4 w-px bg-border" />
-          <AuthLink />
-          <ThemeToggle />
+          <nav className="hidden xl:flex gap-5 text-[11px] uppercase tracking-widest items-center">
+            {LINKS.map(([l, h]) => (
+              <Link
+                key={h}
+                to={h}
+                onClick={(e) => escort(h, e)}
+                className="hover-underline"
+                activeProps={{ className: "italic" }}
+                activeOptions={{ exact: true }}
+              >
+                {l}
+              </Link>
+            ))}
+            <span className="h-4 w-px bg-border" />
+            <AuthLink />
+            <ThemeToggle />
+          </nav>
 
-        </nav>
-
-        <Button
-          ref={menuButtonRef}
-          variant="ghost"
-          size="icon"
-          onClick={() => setOpen((value) => !value)}
-          className="xl:hidden relative z-50"
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
-          aria-controls="site-menu-overlay"
-        >
-          {open ? <X /> : <Menu />}
-        </Button>
-      </div>
-
-    </header>
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          id="site-menu-overlay"
-          initial={{ opacity: 0, y: -12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -12 }}
-          transition={{ duration: 0.18, ease: "easeOut" }}
-          className="fixed inset-0 z-[100] overflow-y-auto bg-background text-foreground xl:hidden"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Site navigation"
-        >
-          <div className="mx-auto flex min-h-full max-w-6xl flex-col px-6 pb-10 pt-24 md:px-10">
-            <div className="eyebrow text-muted-foreground">Amish Kumar · Index</div>
-            <nav aria-label="Main navigation" className="mt-5 grid grid-cols-1 gap-x-12 border-t border-border sm:grid-cols-2">
-              {LINKS.map(([label, href], index) => (
-                <Link
-                  key={href}
-                  ref={index === 0 ? firstMenuLinkRef : undefined}
-                  to={href}
-                  onClick={(event) => { setOpen(false); escort(href, event); }}
-                  className="group flex items-center justify-between border-b border-border py-4 serif text-3xl transition-colors hover:text-accent md:py-5 md:text-4xl"
-                >
-                  <span>{label}</span>
-                  <span className="eyebrow text-muted-foreground">0{index + 1}</span>
-                </Link>
-              ))}
-            </nav>
-            <div className="mt-auto grid grid-cols-2 gap-x-6 gap-y-3 border-t border-border pt-6 sm:grid-cols-4">
-              {top4.map((social) => (
-                <a key={social.name} href={social.url} target="_blank" rel="noreferrer" className="hover-underline text-sm">
-                  {social.name} ↗
-                </a>
-              ))}
-              <div className="col-span-2 flex items-center justify-between sm:col-span-4">
-                <AuthLink />
-                <ThemeToggle />
+          <Button
+            ref={menuButtonRef}
+            variant="ghost"
+            size="icon"
+            onClick={() => setOpen((value) => !value)}
+            className="xl:hidden relative z-50"
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            aria-controls="site-menu-overlay"
+          >
+            {open ? <X /> : <Menu />}
+          </Button>
+        </div>
+      </header>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            id="site-menu-overlay"
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className="fixed inset-0 z-[100] overflow-y-auto bg-background text-foreground xl:hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Site navigation"
+          >
+            <div className="mx-auto flex min-h-full max-w-6xl flex-col px-6 pb-10 pt-24 md:px-10">
+              <div className="eyebrow text-muted-foreground">Amish Kumar · Index</div>
+              <nav
+                aria-label="Main navigation"
+                className="mt-5 grid grid-cols-1 gap-x-12 border-t border-border sm:grid-cols-2"
+              >
+                {LINKS.map(([label, href], index) => (
+                  <Link
+                    key={href}
+                    ref={index === 0 ? firstMenuLinkRef : undefined}
+                    to={href}
+                    onClick={(event) => {
+                      setOpen(false);
+                      escort(href, event);
+                    }}
+                    className="group flex items-center justify-between border-b border-border py-4 serif text-3xl transition-colors hover:text-accent md:py-5 md:text-4xl"
+                  >
+                    <span>{label}</span>
+                    <span className="eyebrow text-muted-foreground">0{index + 1}</span>
+                  </Link>
+                ))}
+              </nav>
+              <div className="mt-auto grid grid-cols-2 gap-x-6 gap-y-3 border-t border-border pt-6 sm:grid-cols-4">
+                {top4.map((social) => (
+                  <a
+                    key={social.name}
+                    href={social.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover-underline text-sm"
+                  >
+                    {social.name} ↗
+                  </a>
+                ))}
+                <div className="col-span-2 flex items-center justify-between sm:col-span-4">
+                  <AuthLink />
+                  <ThemeToggle />
+                </div>
               </div>
             </div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

@@ -11,9 +11,15 @@ export const Route = createFileRoute("/_authenticated/now-share")({
   head: () => ({
     meta: [
       { title: "Share my location — Amish Kumar" },
-      { name: "description", content: "Owner-only control for the live city shown on the Now page." },
+      {
+        name: "description",
+        content: "Owner-only control for the live city shown on the Now page.",
+      },
       { property: "og:title", content: "Owner settings — Amish Kumar" },
-      { property: "og:description", content: "Private controls for location sharing and connected profile details." },
+      {
+        property: "og:description",
+        content: "Private controls for location sharing and connected profile details.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
@@ -59,10 +65,12 @@ function NowSharePage() {
 
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) return;
-    const { error: err } = await supabase.from("presence").upsert(
-      { user_id: userData.user.id, city: found, updated_at: new Date().toISOString() },
-      { onConflict: "user_id" },
-    );
+    const { error: err } = await supabase
+      .from("presence")
+      .upsert(
+        { user_id: userData.user.id, city: found, updated_at: new Date().toISOString() },
+        { onConflict: "user_id" },
+      );
     if (err) {
       setError(
         "Couldn't publish — your account may not be marked as the site owner yet. Ask Lovable to grant you the owner role.",
@@ -133,7 +141,8 @@ function NowSharePage() {
             </div>
             {city && (
               <div className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
-                <MapPin size={13} /> Currently showing: <span className="text-foreground">{city}</span>
+                <MapPin size={13} /> Currently showing:{" "}
+                <span className="text-foreground">{city}</span>
               </div>
             )}
             {lastSent && (
@@ -169,7 +178,6 @@ function NowSharePage() {
               <LogOut size={15} />
             </button>
           </div>
-
         </motion.div>
         <div className="w-full max-w-4xl">
           <LinkedInProfileSync />

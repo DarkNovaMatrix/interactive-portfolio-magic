@@ -9,9 +9,15 @@ export const Route = createFileRoute("/projects")({
   head: () => ({
     meta: [
       { title: "Projects — Amish Kumar" },
-      { name: "description", content: "Dravik, Nirbhay AI, SmartAid, OptiTask — a closer look at the work." },
+      {
+        name: "description",
+        content: "Dravik, Nirbhay AI, SmartAid, OptiTask — a closer look at the work.",
+      },
       { property: "og:title", content: "Projects — Amish Kumar" },
-      { property: "og:description", content: "AI travel, emergency response AI, medical triage, and productivity tools." },
+      {
+        property: "og:description",
+        content: "AI travel, emergency response AI, medical triage, and productivity tools.",
+      },
       { property: "og:url", content: "/projects" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -111,10 +117,12 @@ function ProjectsPage() {
         <header className="max-w-6xl mx-auto mb-24">
           <div className="eyebrow text-muted-foreground">§ Archive — Work</div>
           <h1 className="serif text-6xl md:text-[9vw] leading-[0.9] mt-6">
-            Five things<br/>I <em className="italic">actually</em> built.
+            Five things
+            <br />I <em className="italic">actually</em> built.
           </h1>
           <p className="mt-8 text-lg text-ink-soft max-w-2xl">
-            None of these are demos. Each one solves a specific problem I got obsessed with — and each one is still being sharpened.
+            None of these are demos. Each one solves a specific problem I got obsessed with — and
+            each one is still being sharpened.
           </p>
         </header>
 
@@ -129,7 +137,9 @@ function ProjectsPage() {
               className="grid md:grid-cols-12 gap-8"
             >
               <div className="md:col-span-5">
-                <div className={`aspect-[4/5] relative grain bg-gradient-to-br ${p.tint} text-[#f5f3ee] flex flex-col justify-between p-8 sticky top-32`}>
+                <div
+                  className={`aspect-[4/5] relative grain bg-gradient-to-br ${p.tint} text-[#f5f3ee] flex flex-col justify-between p-8 sticky top-32`}
+                >
                   <div className="eyebrow opacity-70">{p.id}</div>
                   <div>
                     <div className="serif italic text-6xl md:text-7xl leading-none">{p.title}</div>
@@ -156,7 +166,9 @@ function ProjectsPage() {
 
                 <div className="flex flex-wrap gap-2">
                   {p.stack.map((s) => (
-                    <span key={s} className="text-xs border border-ink rounded-full px-3 py-1">{s}</span>
+                    <span key={s} className="text-xs border border-ink rounded-full px-3 py-1">
+                      {s}
+                    </span>
                   ))}
                 </div>
               </div>
@@ -170,7 +182,12 @@ function ProjectsPage() {
               <div className="eyebrow text-muted-foreground">Live from GitHub</div>
               <h2 className="serif mt-3 text-4xl md:text-5xl">Recently updated repositories.</h2>
             </div>
-            <a href={`https://github.com/${data.github?.username ?? "Zero-Day-Smile"}`} target="_blank" rel="noreferrer" className="hover-underline text-sm">
+            <a
+              href={`https://github.com/${data.github?.username ?? "Zero-Day-Smile"}`}
+              target="_blank"
+              rel="noreferrer"
+              className="hover-underline text-sm"
+            >
               All repositories ↗
             </a>
           </div>
@@ -180,10 +197,16 @@ function ProjectsPage() {
                 <li key={repo.url} className="border-t border-border">
                   <a href={repo.url} target="_blank" rel="noreferrer" className="group block py-5">
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
-                      <span className="serif text-2xl group-hover:text-accent transition-colors">{repo.name}</span>
-                      <span className="eyebrow text-muted-foreground">{index + 1} · {new Date(repo.updatedAt).toLocaleDateString()}</span>
+                      <span className="serif text-2xl group-hover:text-accent transition-colors">
+                        {repo.name}
+                      </span>
+                      <span className="eyebrow text-muted-foreground">
+                        {index + 1} · {new Date(repo.updatedAt).toLocaleDateString()}
+                      </span>
                     </div>
-                    <p className="mt-2 text-sm leading-relaxed text-ink-soft">{repo.description || "Public repository"}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+                      {repo.description || "Public repository"}
+                    </p>
                     <div className="mt-3 flex gap-4 text-xs text-muted-foreground">
                       {repo.language && <span>{repo.language}</span>}
                       <span>★ {repo.stars}</span>
@@ -194,9 +217,14 @@ function ProjectsPage() {
               ))}
             </ul>
           ) : (
-            <p className="mt-8 border-t border-border py-5 text-sm text-muted-foreground">Public repository data is temporarily unavailable.</p>
+            <p className="mt-8 border-t border-border py-5 text-sm text-muted-foreground">
+              Public repository data is temporarily unavailable.
+            </p>
           )}
-          <p className="mt-4 text-xs text-muted-foreground">Repository names, descriptions, and links are read from the public GitHub profile when this page refreshes.</p>
+          <p className="mt-4 text-xs text-muted-foreground">
+            Repository names, descriptions, and links are read from the public GitHub profile when
+            this page refreshes.
+          </p>
         </section>
 
         <div className="max-w-6xl mx-auto mt-32 border-t border-ink pt-10 flex flex-wrap items-baseline justify-between gap-6">

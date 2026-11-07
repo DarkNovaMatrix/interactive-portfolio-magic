@@ -15,7 +15,10 @@ export const Route = createFileRoute("/auth")({
       { title: "Sign in — Amish Kumar" },
       { name: "description", content: "Owner sign-in for Amish Kumar's portfolio." },
       { property: "og:title", content: "Sign in — Amish Kumar" },
-      { property: "og:description", content: "Private owner access for Amish Kumar's portfolio controls." },
+      {
+        property: "og:description",
+        content: "Private owner access for Amish Kumar's portfolio controls.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -50,7 +53,10 @@ function AuthPage() {
         });
         if (error) throw error;
         if (!data.session) {
-          setMessage({ kind: "info", text: "Check your email to confirm your account, then sign in." });
+          setMessage({
+            kind: "info",
+            text: "Check your email to confirm your account, then sign in.",
+          });
           setMode("signin");
           return;
         }
@@ -60,7 +66,10 @@ function AuthPage() {
       }
       navigate({ to: safeRedirect(redirect) });
     } catch (err) {
-      setMessage({ kind: "error", text: err instanceof Error ? err.message : "Something went wrong." });
+      setMessage({
+        kind: "error",
+        text: err instanceof Error ? err.message : "Something went wrong.",
+      });
     } finally {
       setBusy(false);
     }
@@ -75,7 +84,9 @@ function AuthPage() {
           animate={{ opacity: 1, y: 0 }}
           className="w-full max-w-sm rounded-2xl border border-border bg-card p-8"
         >
-          <div className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground">owner access</div>
+          <div className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
+            owner access
+          </div>
           <h1 className="serif italic text-4xl mt-2">
             {mode === "signin" ? "Welcome back" : "Create account"}
           </h1>
@@ -102,7 +113,9 @@ function AuthPage() {
               className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-accent"
             />
             {message && (
-              <p className={`text-[13px] ${message.kind === "error" ? "text-red-500" : "text-emerald-500"}`}>
+              <p
+                className={`text-[13px] ${message.kind === "error" ? "text-red-500" : "text-emerald-500"}`}
+              >
                 {message.text}
               </p>
             )}
