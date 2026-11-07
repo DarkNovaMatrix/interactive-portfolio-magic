@@ -5,8 +5,8 @@ export async function saveConnectionKeyForUser(
   connectorId: string,
   connectionAPIKey: string,
 ): Promise<void> {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const connection_key_ciphertext = await encryptConnectionKey(connectionAPIKey);
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { error } = await supabaseAdmin.from("app_user_connections").upsert(
     {
       user_id: userId,
