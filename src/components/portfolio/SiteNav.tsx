@@ -72,7 +72,7 @@ export function SiteNav() {
 
   return (
     <>
-    <header className="fixed top-0 inset-x-0 z-[60] border-b border-border bg-background/90 text-foreground backdrop-blur-md">
+    <header className="fixed top-0 inset-x-0 z-[110] border-b border-border bg-background/90 text-foreground backdrop-blur-md">
       <div className="relative z-50 flex items-center justify-between px-6 md:px-10 py-4">
         <Link to="/" className="serif text-2xl leading-none" onClick={(e) => { setOpen(false); escort("/", e); }}>
           Amish<span className="text-accent">.</span>
@@ -119,7 +119,7 @@ export function SiteNav() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -12 }}
           transition={{ duration: 0.18, ease: "easeOut" }}
-          className="fixed inset-0 z-50 overflow-y-auto bg-background text-foreground xl:hidden"
+          className="fixed inset-0 z-[100] overflow-y-auto bg-background text-foreground xl:hidden"
           role="dialog"
           aria-modal="true"
           aria-label="Site navigation"
