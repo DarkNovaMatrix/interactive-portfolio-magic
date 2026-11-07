@@ -43,6 +43,13 @@
       "when": 1794059662138,
       "tag": "0005_secure_owner_linkedin_connection_access",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794059805788,
+      "tag": "0006_keep_linkedin_credentials_server_only",
+      "breakpoints": true
     }
   ]
 }
