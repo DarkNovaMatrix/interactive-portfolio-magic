@@ -506,16 +506,16 @@ function Universe({ onScaleChange }: { onScaleChange: (s: string) => void }) {
   useFrame(() => {
     const d = camera.position.length();
     // Fade layers based on distance so the universe feels seamless.
-    const sMat = solarStars.current?.children[0] as any;
-    const gMat = galaxyRef.current?.material as any;
-    const wMat = webRef.current?.material as any;
+    const sMat = solarStars.current?.children[0]?.children[0];
+    const gMat = galaxyRef.current?.material;
+    const wMat = webRef.current?.material;
 
-    if (sMat?.opacity !== undefined)
+    if (sMat instanceof THREE.PointsMaterial)
       sMat.opacity = THREE.MathUtils.clamp(1 - (d - 400) / 800, 0, 1);
-    if (gMat?.opacity !== undefined)
+    if (gMat instanceof THREE.PointsMaterial)
       gMat.opacity = THREE.MathUtils.clamp(((d - 150) / 400) * (1 - (d - 5000) / 5000), 0, 0.95);
     if (galaxies.current) galaxies.current.visible = d > 1500;
-    if (wMat?.opacity !== undefined)
+    if (wMat instanceof THREE.PointsMaterial)
       wMat.opacity = THREE.MathUtils.clamp((d - 8000) / 8000, 0, 0.9);
     if (galaxyRef.current) galaxyRef.current.rotation.y += 0.00005;
     if (webRef.current) webRef.current.rotation.y += 0.00002;
