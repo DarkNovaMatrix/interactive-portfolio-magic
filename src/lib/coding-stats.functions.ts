@@ -292,10 +292,10 @@ async function fetchLeetCode(user: string): Promise<LeetCodeStats> {
     const j = (await b.json()) as LeetCodeApiStats;
     if (j?.status === "success") {
       return {
-        totalSolved: j.totalSolved,
-        easy: j.easySolved,
-        medium: j.mediumSolved,
-        hard: j.hardSolved,
+        totalSolved: j.totalSolved ?? 0,
+        easy: j.easySolved ?? 0,
+        medium: j.mediumSolved ?? 0,
+        hard: j.hardSolved ?? 0,
         ranking: j.ranking ?? null,
         url: `https://leetcode.com/u/${user}`,
         recent,
