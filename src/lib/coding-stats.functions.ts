@@ -88,6 +88,98 @@ const CACHE_TTL = 5 * 60 * 1000;
 // Only anonymous/server-token results are cached; visitor-token results are never shared.
 let CACHE: { at: number; data: AllStats } | null = null;
 
+type GithubApiUser = {
+  login: string;
+  name: string | null;
+  avatar_url: string | null;
+  bio: string | null;
+  public_repos: number;
+  followers: number;
+  following: number;
+  html_url: string;
+};
+
+type GithubApiRepo = {
+  fork: boolean;
+  name: string;
+  description: string | null;
+  stargazers_count: number;
+  forks_count: number;
+  html_url: string;
+  language: string | null;
+  updated_at: string;
+};
+
+type GithubApiEvent = {
+  id: string | number;
+  type?: string;
+  repo?: { name?: string };
+  created_at: string;
+};
+
+type LeetCodeApiSubmission = {
+  title?: string;
+  titleSlug?: string;
+  timestamp?: string | number;
+};
+
+type LeetCodeApiSolved = {
+  solvedProblem?: number;
+  easySolved?: number;
+  mediumSolved?: number;
+  hardSolved?: number;
+};
+
+type LeetCodeApiStats = {
+  status?: string;
+  totalSolved?: number;
+  easySolved?: number;
+  mediumSolved?: number;
+  hardSolved?: number;
+  ranking?: number;
+};
+
+type CodeforcesApiProblem = {
+  contestId?: number;
+  index?: string;
+  name?: string;
+};
+
+type CodeforcesApiSubmission = {
+  problem?: CodeforcesApiProblem;
+  verdict?: string;
+  creationTimeSeconds?: number;
+};
+
+type CodeforcesApiResponse<T> = {
+  status?: string;
+  result?: T;
+};
+
+type CodeforcesApiUser = {
+  handle: string;
+  rating?: number;
+  rank?: string;
+  maxRating?: number;
+  maxRank?: string;
+  lastOnlineTimeSeconds?: number;
+};
+
+type CodeChefApiResponse = {
+  success?: boolean;
+  currentRating?: number;
+  stars?: string;
+  globalRank?: number;
+  countryRank?: number;
+};
+
+type GfgApiResponse = {
+  info?: {
+    codingScore?: number;
+    totalProblemsSolved?: number;
+  };
+};
+
 async function safeFetch(url: string, init?: RequestInit): Promise<Response | null> {
   try {
     const res = await fetch(url, {
@@ -115,9 +207,9 @@ async function fetchGithub(user: string, token?: string): Promise<GithubStats> {
     safeFetch(`https://api.github.com/users/${user}/events/public?per_page=15`, init),
   ]);
   if (!uRes) return null;
-  const u = (await uRes.json()) as any;
-  const repos = rRes ? ((await rRes.json()) as any[]) : [];
-  const rawEvents = eRes ? ((await eRes.json()) as any[]) : [];
+  const u = (await uRes.json()) as GithubApiUser;
+  const repos = rRes ? ((await rRes.json()) as GithubApiRepo[]) : [];
+  const rawEvents = eRes ? ((await eRes.json()) as GithubApiEvent[]) : [];
   const events: GithubEvent[] = rawEvents.slice(0, 10).map((e) => ({
     id: String(e.id),
     type: String(e.type ?? "Event").replace(/Event$/, ""),
@@ -126,7 +218,7 @@ async function fetchGithub(user: string, token?: string): Promise<GithubStats> {
     at: e.created_at,
   }));
   const ownedRepos = repos.filter((r) => !r.fork);
-  const toRepo = (r: any): Repo => ({
+  const toRepo = (r: GithubApiRepo): Repo => ({
     name: r.name,
     description: r.description,
     stars: r.stargazers_count,
@@ -167,10 +259,10 @@ async function fetchGithub(user: string, token?: string): Promise<GithubStats> {
 async function fetchLeetCodeRecent(user: string): Promise<RecentSolve[]> {
   const r = await safeFetch(`https://alfa-leetcode-api.onrender.com/${user}/acSubmission?limit=5`);
   if (!r) return [];
-  const j = (await r.json()) as any;
-  return (j?.submission ?? []).slice(0, 5).map((x: any) => ({
-    title: x.title,
-    url: `https://leetcode.com/problems/${x.titleSlug}/`,
+  const j = (await r.json()) as { submission?: LeetCodeApiSubmission[] };
+  return (j?.submission ?? []).slice(0, 5).map((x) => ({
+    title: x.title ?? "Problem",
+    url: `https://leetcode.com/problems/${x.titleSlug ?? ""}/`,
     at: Number(x.timestamp) * 1000,
   }));
 }
@@ -182,7 +274,7 @@ async function fetchLeetCode(user: string): Promise<LeetCodeStats> {
     fetchLeetCodeRecent(user),
   ]);
   if (a) {
-    const j = (await a.json()) as any;
+    const j = (await a.json()) as LeetCodeApiSolved;
     if (typeof j?.solvedProblem === "number") {
       return {
         totalSolved: j.solvedProblem,
@@ -197,13 +289,13 @@ async function fetchLeetCode(user: string): Promise<LeetCodeStats> {
   }
   const b = await safeFetch(`https://leetcode-stats-api.herokuapp.com/${user}`);
   if (b) {
-    const j = (await b.json()) as any;
+    const j = (await b.json()) as LeetCodeApiStats;
     if (j?.status === "success") {
       return {
-        totalSolved: j.totalSolved,
-        easy: j.easySolved,
-        medium: j.mediumSolved,
-        hard: j.hardSolved,
+        totalSolved: j.totalSolved ?? 0,
+        easy: j.easySolved ?? 0,
+        medium: j.mediumSolved ?? 0,
+        hard: j.hardSolved ?? 0,
         ranking: j.ranking ?? null,
         url: `https://leetcode.com/u/${user}`,
         recent,
@@ -219,13 +311,15 @@ async function fetchCodeforces(user: string): Promise<CodeforcesStats> {
     safeFetch(`https://codeforces.com/api/user.status?handle=${user}&count=5`),
   ]);
   if (!res) return null;
-  const sj = subs ? ((await subs.json()) as any) : null;
-  const recent: RecentSolve[] = (sj?.status === "OK" ? sj.result : []).map((x: any) => ({
+  const sj = subs
+    ? ((await subs.json()) as CodeforcesApiResponse<CodeforcesApiSubmission[]>)
+    : null;
+  const recent: RecentSolve[] = (sj?.status === "OK" ? (sj.result ?? []) : []).map((x) => ({
     title: `${x.problem?.contestId ?? ""}${x.problem?.index ?? ""} · ${x.problem?.name ?? "Problem"} (${x.verdict ?? "?"})`,
     url: `https://codeforces.com/contest/${x.problem?.contestId}/problem/${x.problem?.index}`,
     at: Number(x.creationTimeSeconds) * 1000,
   }));
-  const j = (await res.json()) as any;
+  const j = (await res.json()) as CodeforcesApiResponse<CodeforcesApiUser[]>;
   if (j?.status !== "OK" || !j.result?.[0]) return null;
   const u = j.result[0];
   return {
@@ -243,7 +337,7 @@ async function fetchCodeforces(user: string): Promise<CodeforcesStats> {
 async function fetchCodeChef(user: string): Promise<CodeChefStats> {
   const res = await safeFetch(`https://codechef-api.vercel.app/handle/${user}`);
   if (!res) return null;
-  const j = (await res.json()) as any;
+  const j = (await res.json()) as CodeChefApiResponse;
   if (!j?.success && !j?.currentRating) return null;
   return {
     username: user,
@@ -258,7 +352,7 @@ async function fetchCodeChef(user: string): Promise<CodeChefStats> {
 async function fetchGfg(user: string): Promise<GfgStats> {
   const res = await safeFetch(`https://geeks-for-geeks-api.vercel.app/${user}`);
   if (!res) return null;
-  const j = (await res.json()) as any;
+  const j = (await res.json()) as GfgApiResponse;
   const info = j?.info;
   if (!info) return null;
   return {
