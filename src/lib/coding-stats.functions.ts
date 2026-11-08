@@ -88,6 +88,53 @@ const CACHE_TTL = 5 * 60 * 1000;
 // Only anonymous/server-token results are cached; visitor-token results are never shared.
 let CACHE: { at: number; data: AllStats } | null = null;
 
+type GithubApiUser = {
+  login: string;
+  name: string | null;
+  avatar_url: string | null;
+  bio: string | null;
+  public_repos: number;
+  followers: number;
+  following: number;
+  html_url: string;
+};
+
+type GithubApiRepo = {
+  fork: boolean;
+  name: string;
+  description: string | null;
+  stargazers_count: number;
+  forks_count: number;
+  html_url: string;
+  language: string | null;
+  updated_at: string;
+};
+
+type GithubApiEvent = {
+  id: string | number;
+  type?: string;
+  repo?: { name?: string };
+  created_at: string;
+};
+
+type LeetCodeApiSubmission = {
+  title?: string;
+  titleSlug?: string;
+  timestamp?: string | number;
+};
+
+type CodeforcesApiProblem = {
+  contestId?: number;
+  index?: string;
+  name?: string;
+};
+
+type CodeforcesApiSubmission = {
+  problem?: CodeforcesApiProblem;
+  verdict?: string;
+  creationTimeSeconds?: number;
+};
+
 async function safeFetch(url: string, init?: RequestInit): Promise<Response | null> {
   try {
     const res = await fetch(url, {
@@ -115,9 +162,9 @@ async function fetchGithub(user: string, token?: string): Promise<GithubStats> {
     safeFetch(`https://api.github.com/users/${user}/events/public?per_page=15`, init),
   ]);
   if (!uRes) return null;
-  const u = (await uRes.json()) as any;
-  const repos = rRes ? ((await rRes.json()) as any[]) : [];
-  const rawEvents = eRes ? ((await eRes.json()) as any[]) : [];
+  const u = (await uRes.json()) as GithubApiUser;
+  const repos = rRes ? ((await rRes.json()) as GithubApiRepo[]) : [];
+  const rawEvents = eRes ? ((await eRes.json()) as GithubApiEvent[]) : [];
   const events: GithubEvent[] = rawEvents.slice(0, 10).map((e) => ({
     id: String(e.id),
     type: String(e.type ?? "Event").replace(/Event$/, ""),
@@ -126,7 +173,7 @@ async function fetchGithub(user: string, token?: string): Promise<GithubStats> {
     at: e.created_at,
   }));
   const ownedRepos = repos.filter((r) => !r.fork);
-  const toRepo = (r: any): Repo => ({
+  const toRepo = (r: GithubApiRepo): Repo => ({
     name: r.name,
     description: r.description,
     stars: r.stargazers_count,
@@ -167,7 +214,7 @@ async function fetchGithub(user: string, token?: string): Promise<GithubStats> {
 async function fetchLeetCodeRecent(user: string): Promise<RecentSolve[]> {
   const r = await safeFetch(`https://alfa-leetcode-api.onrender.com/${user}/acSubmission?limit=5`);
   if (!r) return [];
-  const j = (await r.json()) as any;
+  const j = (await r.json()) as { submission?: LeetCodeApiSubmission[] };
   return (j?.submission ?? []).slice(0, 5).map((x: any) => ({
     title: x.title,
     url: `https://leetcode.com/problems/${x.titleSlug}/`,
