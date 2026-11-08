@@ -311,7 +311,9 @@ async function fetchCodeforces(user: string): Promise<CodeforcesStats> {
     safeFetch(`https://codeforces.com/api/user.status?handle=${user}&count=5`),
   ]);
   if (!res) return null;
-  const sj = subs ? ((await subs.json()) as CodeforcesApiResponse<CodeforcesApiSubmission[]>) : null;
+  const sj = subs
+    ? ((await subs.json()) as CodeforcesApiResponse<CodeforcesApiSubmission[]>)
+    : null;
   const recent: RecentSolve[] = (sj?.status === "OK" ? (sj.result ?? []) : []).map((x) => ({
     title: `${x.problem?.contestId ?? ""}${x.problem?.index ?? ""} · ${x.problem?.name ?? "Problem"} (${x.verdict ?? "?"})`,
     url: `https://codeforces.com/contest/${x.problem?.contestId}/problem/${x.problem?.index}`,
