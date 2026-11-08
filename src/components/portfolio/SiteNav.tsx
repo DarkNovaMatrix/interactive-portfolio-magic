@@ -63,6 +63,7 @@ export function SiteNav() {
     if (!open) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    const menuButton = menuButtonRef.current;
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") setOpen(false);
     };
@@ -71,7 +72,7 @@ export function SiteNav() {
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", closeOnEscape);
-      menuButtonRef.current?.focus();
+      menuButton?.focus();
     };
   }, [open]);
 
