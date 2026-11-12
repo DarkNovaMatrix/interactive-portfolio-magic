@@ -6,6 +6,7 @@ import { SiteNav } from "@/components/portfolio/SiteNav";
 import { SiteFooter } from "@/components/portfolio/SiteFooter";
 
 export const Route = createFileRoute("/projects")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Projects — Amish Kumar" },

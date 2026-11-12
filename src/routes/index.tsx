@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import Portfolio from "@/components/portfolio/Portfolio";
 
 export const Route = createFileRoute("/")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Amish Kumar — AI, Product & Systems Engineering" },
@@ -15,9 +16,11 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Selected products, engineering work, and the ideas behind them.",
       },
+      { property: "og:url", content: "/" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
+    links: [{ rel: "canonical", href: "/" }],
   }),
   component: Portfolio,
 });

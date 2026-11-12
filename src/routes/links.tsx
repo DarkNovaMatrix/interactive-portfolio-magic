@@ -5,6 +5,7 @@ import { SiteFooter } from "@/components/portfolio/SiteFooter";
 import { SOCIALS, type Social } from "@/data/socials";
 
 export const Route = createFileRoute("/links")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Links — Amish Kumar" },

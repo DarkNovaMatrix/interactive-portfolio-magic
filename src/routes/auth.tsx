@@ -7,6 +7,7 @@ import { SiteNav } from "@/components/portfolio/SiteNav";
 type Search = { redirect?: string };
 
 export const Route = createFileRoute("/auth")({
+  staticData: { sitemap: false },
   validateSearch: (search: Record<string, unknown>): Search => ({
     redirect: typeof search.redirect === "string" ? search.redirect : undefined,
   }),

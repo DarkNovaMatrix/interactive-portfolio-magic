@@ -55,6 +55,7 @@ const statsQuery = queryOptions({
 });
 
 export const Route = createFileRoute("/now")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Now — What Amish is doing, live" },
@@ -68,9 +69,11 @@ export const Route = createFileRoute("/now")({
         property: "og:description",
         content: "Real-time coding activity across GitHub, LeetCode, Codeforces and more.",
       },
+      { property: "og:url", content: "/now" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
+    links: [{ rel: "canonical", href: "/now" }],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(statsQuery),
   component: NowPage,

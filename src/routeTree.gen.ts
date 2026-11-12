@@ -18,6 +18,7 @@ import { Route as CosmosRouteImport } from './routes/cosmos'
 import { Route as LinksRouteImport } from './routes/links'
 import { Route as NowRouteImport } from './routes/now'
 import { Route as ProjectsRouteImport } from './routes/projects'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedNowShareRouteImport } from './routes/_authenticated/now-share'
 import { Route as ApiOauthLinkedinReturnRouteImport } from './routes/api/oauth/linkedin/return'
 
@@ -65,6 +66,11 @@ const ProjectsRoute = ProjectsRouteImport.update({
   path: '/projects',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedNowShareRoute = AuthenticatedNowShareRouteImport.update({
   id: '/now-share',
   path: '/now-share',
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/links': typeof LinksRoute
   '/now': typeof NowRoute
   '/projects': typeof ProjectsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/now-share': typeof AuthenticatedNowShareRoute
   '/api/oauth/linkedin/return': typeof ApiOauthLinkedinReturnRoute
 }
@@ -97,6 +104,7 @@ export interface FileRoutesByTo {
   '/links': typeof LinksRoute
   '/now': typeof NowRoute
   '/projects': typeof ProjectsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/now-share': typeof AuthenticatedNowShareRoute
   '/api/oauth/linkedin/return': typeof ApiOauthLinkedinReturnRoute
 }
@@ -111,6 +119,7 @@ export interface FileRoutesById {
   '/links': typeof LinksRoute
   '/now': typeof NowRoute
   '/projects': typeof ProjectsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/now-share': typeof AuthenticatedNowShareRoute
   '/api/oauth/linkedin/return': typeof ApiOauthLinkedinReturnRoute
 }
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/links'
     | '/now'
     | '/projects'
+    | '/sitemap.xml'
     | '/now-share'
     | '/api/oauth/linkedin/return'
   fileRoutesByTo: FileRoutesByTo
@@ -137,6 +147,7 @@ export interface FileRouteTypes {
     | '/links'
     | '/now'
     | '/projects'
+    | '/sitemap.xml'
     | '/now-share'
     | '/api/oauth/linkedin/return'
   id:
@@ -150,6 +161,7 @@ export interface FileRouteTypes {
     | '/links'
     | '/now'
     | '/projects'
+    | '/sitemap.xml'
     | '/_authenticated/now-share'
     | '/api/oauth/linkedin/return'
   fileRoutesById: FileRoutesById
@@ -164,6 +176,7 @@ export interface RootRouteChildren {
   LinksRoute: typeof LinksRoute
   NowRoute: typeof NowRoute
   ProjectsRoute: typeof ProjectsRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiOauthLinkedinReturnRoute: typeof ApiOauthLinkedinReturnRoute
 }
 
@@ -232,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/now-share': {
       id: '/_authenticated/now-share'
       path: '/now-share'
@@ -270,6 +290,7 @@ const rootRouteChildren: RootRouteChildren = {
   LinksRoute: LinksRoute,
   NowRoute: NowRoute,
   ProjectsRoute: ProjectsRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiOauthLinkedinReturnRoute: ApiOauthLinkedinReturnRoute,
 }
 export const routeTree = rootRouteImport

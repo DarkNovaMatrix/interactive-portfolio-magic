@@ -8,6 +8,7 @@ import { SiteNav } from "@/components/portfolio/SiteNav";
 import { LinkedInProfileSync } from "@/components/portfolio/LinkedInProfileSync";
 
 export const Route = createFileRoute("/_authenticated/now-share")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Share my location — Amish Kumar" },
