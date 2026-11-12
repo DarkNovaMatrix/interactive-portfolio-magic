@@ -13,3 +13,4 @@
 
 - Keep per-user OAuth credentials encrypted in server-only storage and access them only through authenticated server functions, because provider credentials must never reach browser code.
 - Fetch public profile data through server-side source-specific readers and keep it separate from authored claims, because scraped facts must not overwrite reviewed biography or project details.
+- Build the sitemap from explicitly included public routes and exclude authenticated subtrees, because private controls must never be advertised to crawlers.

@@ -19,8 +19,11 @@ export const Route = createFileRoute("/aether")({
       },
       { property: "og:title", content: "AETHER — Amish Kumar's AI" },
       { property: "og:description", content: "The cockpit of a JARVIS-style AI living inside a portfolio." },
+      { property: "og:url", content: "/aether" },
       { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
+    links: [{ rel: "canonical", href: "/aether" }],
   }),
   component: AetherCockpit,
 });
