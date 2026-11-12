@@ -10,6 +10,7 @@ import { readGithubToken } from "@/lib/github-token";
 import { SOCIALS } from "@/data/socials";
 
 export const Route = createFileRoute("/about")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "About — Amish Kumar · AI & Full-Stack Builder" },

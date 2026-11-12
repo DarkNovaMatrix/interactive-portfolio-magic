@@ -55,6 +55,7 @@ const statsQuery = queryOptions({
 });
 
 export const Route = createFileRoute("/now")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Now — What Amish is doing, live" },

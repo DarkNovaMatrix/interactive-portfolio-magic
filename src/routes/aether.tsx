@@ -8,6 +8,7 @@ import { useTheme } from "@/lib/theme";
 import { AetherAvatar3D, type AetherForm, type AetherMood } from "@/components/aether/AetherAvatar3D";
 
 export const Route = createFileRoute("/aether")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "AETHER — Amish Kumar's AI" },

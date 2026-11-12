@@ -10,6 +10,7 @@ import { getDeepDive } from "@/data/projects";
 import { COSMOS_EVENT } from "@/lib/aether-commands";
 
 export const Route = createFileRoute("/cosmos")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Cosmos — Fly through Amish's universe" },
