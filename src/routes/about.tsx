@@ -511,7 +511,7 @@ function LiveStats() {
       {/* Top GitHub repos */}
       {s.github?.topRepos?.length ? (
         <div>
-          <div className="eyebrow text-muted-foreground mb-3">§ Latest / most-starred repos</div>
+          <div className="eyebrow text-muted-foreground mb-3">§ Most-starred repositories</div>
           <div className="grid md:grid-cols-2 gap-3">
             {s.github.topRepos.map((r) => (
               <a
@@ -540,6 +540,43 @@ function LiveStats() {
               </a>
             ))}
           </div>
+        </div>
+      ) : null}
+
+      {s.github?.recentRepos?.length ? (
+        <div>
+          <div className="eyebrow text-muted-foreground mb-3">§ Newest public repositories</div>
+          <div className="grid md:grid-cols-2 gap-x-10">
+            {s.github.recentRepos.slice(0, 6).map((repo) => (
+              <a
+                key={repo.url}
+                href={repo.url}
+                target="_blank"
+                rel="noreferrer"
+                className="group border-t border-rule py-4"
+              >
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <span className="serif text-xl italic group-hover:text-accent transition">
+                    {repo.name}
+                  </span>
+                  <span className="text-[11px] text-muted-foreground">
+                    {new Date(repo.updatedAt).toLocaleDateString()}
+                  </span>
+                </div>
+                <p className="mt-1 text-sm text-ink-soft line-clamp-2">
+                  {repo.description || "Public GitHub repository"}
+                </p>
+                <div className="mt-2 flex gap-4 text-[11px] text-muted-foreground">
+                  {repo.language && <span>{repo.language}</span>}
+                  <span>★ {repo.stars}</span>
+                </div>
+              </a>
+            ))}
+          </div>
+          <p className="mt-2 text-[11px] text-muted-foreground">
+            Repository details update from public GitHub data. Curated project stories remain
+            separate.
+          </p>
         </div>
       ) : null}
 
